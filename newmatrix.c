@@ -1,11 +1,12 @@
 /* 
-MATRIX OPERATOR 
+MATRIX TERMINATOR
 */
 
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define mxid 10
 const int mxdim = 20;
@@ -18,29 +19,69 @@ struct matrix {
     int pin[];      //array of values 2D, disguised as 1D (follows the pin[i*cols + j] format)
 };
 
-//dynamic array structure of matrices
-struct matr_list {
+//dynamic array of matrices structure (wanna be)
+struct matrix_list {
     size_t size; 
-    struct matrix **elem[]; 
+    struct matrix *e[]; 
 };
 
-//matrix initialization, given rows and columns; allocate memory and ask id
-int init_matrix(struct matrix **ptr, int r, int c) {
+//matrix initialization, given rows and columns and id; allocate memory 
+int init_matrix(struct matrix **ptr, int r, int c, char name[mxid]) {
     void *temp = malloc(sizeof **ptr + r*c*sizeof(int));
     if(!temp)
         return 1;
     *ptr = temp; 
-    printf("Give matrix name: ");
-    scanf("%s", ptr[0]->id); 
+    strcpy(ptr[0]->id, name); 
     ptr[0]->rows = r;
     ptr[0]->cols = c;
     return 0;
 }
 
-//delete matrix
+//delete matrix (needs check)
 void delete_matrix(struct matrix **ptr) {
     free(*ptr);
-    free(ptr); //needs check 
+}
+
+//insert matrix in memory array (super cool), double size of memory if it doesn't fit. 
+int insert(struct matrix_list **mem, struct matrix *m) {
+    size_t x = *mem ? mem[0]->size : 0;
+    size_t y = x + 1; 
+    if((x & y) == 0) {
+        void *temp = realloc(*mem, sizeof **mem + (x + y)*sizeof mem[0]->e[0]);
+        if(!temp)
+            return 1;
+        *mem = temp; 
+    }
+    mem[0]->e[x] = m;
+    mem[0]->size = y; 
+    return 0; 
+} 
+
+
+//find index of matrix, given name; else return -1; 
+int search_id(char s[mxid], const struct matrix_list *v) {
+    for(int i = 0; i < v->size; i++) {
+        if(v->e[i])
+            if(strcmp(s, (v->e[i])->id) == 0)
+                return i; 
+    }
+    return -1;
+}
+
+//ask matrix id, user input; needs character limit without termination probably fgets?; 
+//need to check if in database; (seperate function above, search_id) DONE!
+void query_id(char s[mxid], const struct matrix_list *v) {
+    printf("Give matrix name (max 10 characters, no spaces): "); 
+    scanf("%s", s);
+    fflush(stdin);
+    if(v) {
+        while(search_id(s, v) != -1) {
+            puts("Duplicate names not allowed! Try again."); 
+            printf("Give matrix name (max 10 characters, no spaces): "); 
+            scanf("%s", s); 
+            fflush(stdin); 
+        }
+    }
 }
 
 //ask dimensions, user input
@@ -73,8 +114,8 @@ void query_values(struct matrix *empty) {
 
 //show fundamental values of given matrix 
 void show_matrix(struct matrix *mat) {
-    printf("%d %d\n", mat->rows, mat->cols);
     puts(mat->id); 
+    printf("%d %d\n", mat->rows, mat->cols);
     for(int i = 0; i < mat->rows; i++) {
         for(int j = 0; j < mat->cols; j++) {
             printf("%d\t", mat->pin[i*(mat->cols) + j]);
@@ -118,29 +159,49 @@ void product(struct matrix *prod, const struct matrix *left, const struct matrix
     }
 }
 
-int main() {
-    struct matrix *left = NULL, *right = NULL;  
+//ask with this order: id, (dimensions), (values); 
+int main() { 
+    struct matrix *new = NULL;
+    char name[mxid]; 
     int r, c;
-    query_dim(&r, &c);
-    if(init_matrix(&left, r, c))
-        puts("Houston"); 
-    query_values(left);
-    show_matrix(left); 
+    struct matrix_list *v = NULL; 
 
     query_dim(&r, &c); 
-    if(init_matrix(&right, r, c))
-        puts("Houston"); 
-    query_values(right); 
-    show_matrix(right); 
+    query_id(name, v); 
+    init_matrix(&new, r, c, name);
+    query_values(new); 
+    insert(&v, new); 
+    new = NULL; 
+    show_matrix(v->e[0]);
 
-    struct matrix *prod = NULL; 
-    if(left->cols == right->rows) {
-        if(init_matrix(&prod, left->rows, right->cols))
-            puts("Houston");
-        product(prod, left, right); 
-        show_matrix(prod);
-    }
+    query_dim(&r, &c); 
+    query_id(name, v); 
+    init_matrix(&new, r, c, name);
+    query_values(new); 
+    insert(&v, new); 
+    new = NULL; 
+
+
+    query_id(name, v); 
+    init_matrix(&new, (v->e[0])->rows, (v->e[1])->cols, name); 
+    product(new, v->e[0], v->e[1]); 
+    insert(&v, new); 
+
+    show_matrix(v->e[0]); 
+    show_matrix(v->e[1]); 
+    show_matrix(v->e[2]);
+
+    puts("I am your daddy");
     
+    delete_matrix(&v->e[0]); 
+    puts("got heere");
+    delete_matrix(&v->e[1]); 
+    puts("2");
+    delete_matrix(&v->e[2]); 
+    puts("3"); 
+
+    free(v); 
+    puts("4"); 
 /*
     for(int i = 0; i < new->rows; i++) {
         for(int j = 0; j < new->cols; j++) 

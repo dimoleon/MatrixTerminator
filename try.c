@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 
-#define mx 16
 
 int main() {
-    printf("mx"); 
+    char a[11] = "yes"; 
+    char b[10]; 
+    scanf("%s", b); 
+    printf("%d", strcmp(a, b)); 
 }

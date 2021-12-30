@@ -25,6 +25,7 @@ int main() {
     for(int i = 0; i < 10; i++) 
         if(!push_back(&array, rand()%20)) 
             printf("%d\n", array->value[i]); 
+    printf("%li %li %li\n", sizeof array, sizeof *array, sizeof array->value); 
     //size_t mem = sizeof *array + (array->size)*sizeof array->value[0]; 
     //printf("%li %li %li %li %li\n", sizeof *array, sizeof array, sizeof &array, mem, sizeof(int)); 
 //    printf("%li %li\n", sizeof *array, sizeof array);
