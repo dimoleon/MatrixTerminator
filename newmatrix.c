@@ -40,10 +40,11 @@ int init_matrix(struct matrix **ptr, int r, int c, char name[mxid]) {
 //delete matrix (needs check)
 void delete_matrix(struct matrix **ptr) {
     free(*ptr);
+    *ptr = NULL; 
 }
 
 //insert matrix in memory array (super cool), double size of memory if it doesn't fit. 
-int insert(struct matrix_list **mem, struct matrix *m) {
+int insert(struct matrix *m, struct matrix_list **mem) {
     size_t x = *mem ? mem[0]->size : 0;
     size_t y = x + 1; 
     if((x & y) == 0) {
@@ -84,9 +85,10 @@ void query_id(char s[mxid], const struct matrix_list *v) {
     }
 }
 
-//ask dimensions, user input
+//ask dimensions, user input; problematic if user inputs characters!
 void query_dim(int *pr, int *pc) {
     do {
+        fflush(stdin); 
         printf("Give number of rows: ");
         scanf("%d", pr); 
         if(*pr > mxdim || *pr < 1)
@@ -94,6 +96,7 @@ void query_dim(int *pr, int *pc) {
     } while(*pr > mxdim || *pr < 1);
 
     do {
+        fflush(stdin); 
         printf("Give number of cols: ");
         scanf("%d", pc); 
         if(*pc > mxdim || *pc < 1)
@@ -163,45 +166,33 @@ void product(struct matrix *prod, const struct matrix *left, const struct matrix
 int main() { 
     struct matrix *new = NULL;
     char name[mxid]; 
-    int r, c;
+    int r = 0, c = 0;
     struct matrix_list *v = NULL; 
-
-    query_dim(&r, &c); 
-    query_id(name, v); 
-    init_matrix(&new, r, c, name);
-    query_values(new); 
-    insert(&v, new); 
-    new = NULL; 
-    show_matrix(v->e[0]);
-
-    query_dim(&r, &c); 
-    query_id(name, v); 
-    init_matrix(&new, r, c, name);
-    query_values(new); 
-    insert(&v, new); 
-    new = NULL; 
-
-
-    query_id(name, v); 
-    init_matrix(&new, (v->e[0])->rows, (v->e[1])->cols, name); 
-    product(new, v->e[0], v->e[1]); 
-    insert(&v, new); 
-
-    show_matrix(v->e[0]); 
-    show_matrix(v->e[1]); 
-    show_matrix(v->e[2]);
-
-    puts("I am your daddy");
     
-    delete_matrix(&v->e[0]); 
-    puts("got heere");
-    delete_matrix(&v->e[1]); 
-    puts("2");
+    for(int k = 0; k < 5; k++) {
+        query_id(name, v); 
+        fflush(stdin); 
+        query_dim(&r, &c); 
+        init_matrix(&new, r, c, name);
+        for(int i = 0; i < new->rows; i++) {
+            for(int j = 0; j < new->cols; j++) 
+                new->pin[i*(new->cols) + j] = rand()%20; 
+        }
+        insert(new, &v); 
+        new = NULL; 
+        r = c = 0; 
+    }
+    for(int i = 0; i < v->size; i++) 
+        show_matrix(v->e[i]); 
     delete_matrix(&v->e[2]); 
-    puts("3"); 
-
+    for(int i = 0; i < v->size; i++) 
+        if(v->e[i])
+            show_matrix(v->e[i]); 
+    for(int i = 0; i < v->size; i++)
+        if(v->e[i])
+            delete_matrix(&v->e[i]); 
     free(v); 
-    puts("4"); 
+    puts("YEAH BABY"); 
 /*
     for(int i = 0; i < new->rows; i++) {
         for(int j = 0; j < new->cols; j++) 
