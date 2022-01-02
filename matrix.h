@@ -12,7 +12,7 @@ struct matrix {
     char id[mxid];  //name
     int rows;       //# of rows 
     int cols;       //# of columns 
-    int pin[];      //array of values 2D, disguised as 1D (follows the pin[i*cols + j] format)
+    float pin[];      //array of values 2D, disguised as 1D (follows the pin[i*cols + j] format)
 };
 
 //dynamic array of matrices structure (wanna be)
@@ -23,7 +23,7 @@ struct matrix_list {
 
 //matrix initialization, given rows and columns and id; allocate memory 
 int init_matrix(struct matrix **ptr, int r, int c, char name[mxid]) {
-    void *temp = malloc(sizeof **ptr + r*c*sizeof(int));
+    void *temp = malloc(sizeof **ptr + r*c*sizeof(float));
     if(!temp)
         return 1;
     *ptr = temp; 
@@ -105,7 +105,7 @@ void query_values(struct matrix *empty) {
     for(int i = 0; i < empty->rows; i++) {
         for(int j = 0; j < empty->cols; j++) {
             printf("Give value of %s[%d][%d]: ", empty->id, i+1, j+1); 
-            scanf("%d", &empty->pin[i*empty->cols + j]); 
+            scanf("%f", &empty->pin[i*empty->cols + j]); 
         }
     }
 }
@@ -117,7 +117,7 @@ void show_matrix(struct matrix *mat) {
     printf("%d %d\n", mat->rows, mat->cols);
     for(int i = 0; i < mat->rows; i++) {
         for(int j = 0; j < mat->cols; j++) {
-            printf("%d\t", mat->pin[i*(mat->cols) + j]);
+            printf("%.2f\t", mat->pin[i*(mat->cols) + j]);
         }
         putchar('\n');
     }
@@ -132,6 +132,7 @@ void transpose(struct matrix *transp, const struct matrix *orig) {
 
 //matrix addition
 void sum(struct matrix *sum, const struct matrix *A, const struct matrix *B) {
+    assert(A->rows == B->rows && A->cols == B->cols);
     for(int i = 0; i < A->rows; i++) 
         for(int j = 0; j < A->cols; j++)
             (sum->pin)[i*A->cols + j] = A->pin[i*A->cols + j] + B->pin[i*B->cols + j]; 
@@ -139,6 +140,7 @@ void sum(struct matrix *sum, const struct matrix *A, const struct matrix *B) {
 
 //matrix substraction
 void difference(struct matrix *diff, const struct matrix *A, const struct matrix *B) {
+    assert(A->rows == B->rows && A->cols == B->cols);
     for(int i = 0; i < A->rows; i++) 
         for(int j = 0; j < A->cols; j++)
             (diff->pin)[i*A->cols + j] = A->pin[i*A->cols + j] - B->pin[i*B->cols + j]; 
@@ -157,3 +159,22 @@ void product(struct matrix *prod, const struct matrix *left, const struct matrix
         }
     }
 }
+
+//scalar multiplication, modifies matrix, doesn't create new matrix; 
+void scalar(struct matrix *m) {
+    float c; 
+    puts("Attention! Multiplication by scalar doesn't create a new matrix, but it modifies the given one.");
+    printf("Give the value of the scalar: ");
+    scanf("%f", &c); 
+    for(int i = 0; i < m->rows; i++) 
+        for(int j = 0; j < m->cols; j++) 
+            m->pin[i*m->rows + j]; 
+} 
+
+//copies values of old matrix to new matrix, similar to strcpy;
+void copy_matrix(struct matrix *kid, const struct matrix *parent) {
+    assert(kid->rows == parent->rows && kid->cols == parent->rows);
+    for(inti  = 0; i < kid->rows; i++)
+        for(int j = 0; j < kid->cols; j++)
+            kid->pin[i*kid->rows + j] = parent->pin[i*parent->rows + j]; 
+} 
