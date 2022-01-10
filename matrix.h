@@ -152,7 +152,7 @@ void product(struct matrix *prod, const struct matrix *left, const struct matrix
     //int common = left->cols; 
     for(int i = 0; i < prod->rows; i++) {
         for(int j = 0; j < prod->cols; j++) {
-            int summ = 0; 
+            float summ = 0; 
             for(int p = 0; p < left->cols; p++) 
                 summ += left->pin[i*left->cols + p] * right->pin[p*right->cols + j];
             prod->pin[i*right->cols + j] = summ; 
