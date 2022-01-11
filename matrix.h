@@ -174,7 +174,7 @@ void scalar(struct matrix *m) {
 //copies values of old matrix to new matrix, similar to strcpy;
 void copy_matrix(struct matrix *kid, const struct matrix *parent) {
     assert(kid->rows == parent->rows && kid->cols == parent->rows);
-    for(inti  = 0; i < kid->rows; i++)
+    for(int i = 0; i < kid->rows; i++)
         for(int j = 0; j < kid->cols; j++)
             kid->pin[i*kid->rows + j] = parent->pin[i*parent->rows + j]; 
 } 

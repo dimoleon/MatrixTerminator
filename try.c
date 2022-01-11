@@ -12,9 +12,9 @@ void realref(float **p, int rowc, int colc) {
 			if(rowc == i) {
 				i = r;
 				lead++; 
-				if(colc == lead) {
+				if(colc == lead) 
 					return;	
-				}
+				
 			}
 		}
 
@@ -31,11 +31,12 @@ void realref(float **p, int rowc, int colc) {
 				for(int j = 0; j < colc; j++) 
 					if(j == lead)
 						p[h][j] = 0; 
-					else {
+					else 
 						p[h][j] -= (p[r][j]/p[r][lead])*treason;
-					}
+					
 			}
 		}
+
 		lead++; 
 	}
 }
@@ -44,9 +45,9 @@ void ref(struct matrix *m) {
 	int rowc = m->rows, colc = m->cols;
 	float **p; 
 	p = (float **) malloc(rowc * sizeof(float)); 
-	for(int row = 0; row < rowc; row++) {
+	for(int row = 0; row < rowc; row++) 
 		p[row] = (float *) malloc(colc * sizeof(float)); 
-	}
+	
 	for(int i = 0; i < rowc; i++) 
 		for(int j = 0; j < colc; j++) 
 			p[i][j] = m->pin[i*colc + j]; 
@@ -56,6 +57,10 @@ void ref(struct matrix *m) {
 	for(int i = 0; i < rowc; i++)
 		for(int j = 0; j < colc; j++) 
 			m->pin[i*colc + j] = p[i][j]; 
+
+	for(int row = 0; row < rowc; row++)
+		free(p[row]); 
+	free(p); 
 } 
 
 int main() {
