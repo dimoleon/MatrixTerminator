@@ -1,107 +1,131 @@
 #include <stdio.h>
-int
-main (void) 
+#include <stdlib.h>
+char i, j, k , l, input[1023];
+int main (void) 
 {
   
-printf ("What do you want the program to do? (Type 0 for Options)");
-  
-int i;
-
-there:
-i = getchar();
-  
-if (i == 0)
+	printf ("What do you want the program to do? (Type 'm' for the main menu.)\n");
+	start:
+	fgets(input, 1024, stdin); 
+	i = input[0]; 
+	if (i == 'm')		    //Main Menu.
     
-    {
+    {Main_Menu:
       printf
-	("The program can do the following:\n-Create Matrix(1)\n-Load Matrix(2)\n-Edit Matrix(3)\n-View Existing Matrix(4)\n-Write(5)\n-Do Operations with Matrices(6)\n\n Just press the code of the command you want to use!");
-fflush(stdin);      
-goto there;
+	("The program can do the following:\n-Create Matrix(1)\n-Load Matrix(2)\n-Edit Matrix(3)"
+    "\n-View Existing Matrix(4)\n-Write(5)\n-Do Operations with Matrices(6)"
+    "\n\n-You can always press (q) to quit and (m) for the main menu.\nJust press the code of the command you want to use!\n");
+	goto start;
+    }
       
-if (i == 1)		// Create Matrix.
-here:	
-{printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)");
-fflush(stdin);
-i = getchar();
-if (i == 1){}
-if (i == 2){}
-if (i == 3){}
-if( i<1 || i>3){printf("Wrong input! Try again..");
-goto here;
-}
-      
-if (i == 2)		// Load Matrix.
-	{printf("Give path to import file");
+	else if (i == '1')		// Create Matrix.
+	{ 	printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)\n");
+    	opi1:
+		fgets(input, 1024, stdin);
+		k = input[0];
+    	if (k == '1'){} 		                     //Create New.
+    	if (k == '2'){}			                     // Copy other.
+    	if (k == '3'){}			                     //Pull Values.
+		if (k == 'q')                                //Quit.
+        {printf("Goodbye!");           
+        exit(0);}   
+		if (k == 'm')
+		{goto Main_Menu;}			                 // Main Menu.
+    	if( k != 1 && k != 2 && k != 3)
+		{printf("Invalid input! Try again..1\n\n");
+    	goto opi1;}
 	}
       
-if (i == 3)		// Edit Matrix.
+	else if (i == '2')		// Load Matrix.
+	{	printf("Give path to import file");
+	}
+      
+	else if (i == '3')		// Edit Matrix.
 	{
 	}
       
-if (i == 4)		// View Existing Matrices.
-	{printf("Do you want to show all matrices (0) or a single?(1)");
-fflush(stdin);
-i = getchar();
-if(i == 0){}
-if(i == 1){}
+	else if (i == '4')		// View Existing Matrices.
+	{	
+		printf("Do you want to show all matrices (0) or a single?(1).\n");
+        opi4:
+		fgets(input, 1024, stdin);
+		j = input[0];
+		if(j == '0'){}		        // Show all.
+		else if(j == '1'){}		    //Show single.
+		else if(j == 'm')		    //Main Menu.
+			{goto Main_Menu;} 
+		else if(j == 'q')		    //Quit.
+			{printf("Goodbye!");
+        	exit(0);}
+        else                        //Invalid input.
+        	{printf("Invalid input! Try again.."); 
+        	goto opi4;}
 	}
 
-if (i == 5){}           // Write.        
-if (i == 6)		// Do Operations with Matrices.
-if(i<1 || i>6)
-{printf("Wrong input! Try again..");
-goto there;}
-{
-oper:
+	else if (i == '5')		// Write.
+	{
+
+	}                   
+
+	else if (i == '6')		// Do Operations with Matrices.
+	{
 	  printf
-	    ("These are the operation codes:-Addition(1).\n-Subtraction(2).\n-Multiplication(3).\n- Transposition(4).\n- Scalar Multiplication(5). \n-Determinant(6).\n-Row Echelon from(7)\n\n ~The following are for vectors only~\n\n-Dot product(8)\n-Cross product(9)\n-(Mixed) product(10).\n");
-	  
-fflush(stdin);
-i = getchar();
-	  
-if (i == 1)		// Addition.
+	    ("These are the operation codes:\n-Addition(0).\n-Subtraction(1).\n-Multiplication(2).\n-Transposition(3)."
+        "\n-Scalar Multiplication(4). \n-Determinant(5).\n-Row Echelon form(6).\n\n ~The following are for vectors only~"
+        "\n\n-Dot product(7).\n-Cross product(Only 3D)(8).\n-Mixed product(Only 3D)(9).\n");
+		opi6:
+		fgets(input, 1024, stdin);
+		l = input[0];	  
+		if (l == '0')		    // Addition.
 	    {
 	    }
-	  
-if (i == 2)		// Subtraction.
+		else if (l == '1')		// Subtraction.
 	    {
 	    }
-	  
-if (i == 3)		// Multiplication.
+		else if (l == '2')		// Multiplication.
 	    {
 	    }
-	  
-if (i == 4)		// Transposition.
+		else if (l == '3')		// Transposition.
 	    {
 	    }
-
-if (i == 5)		// Scalar Multiplication.
+		else if (l == '4')		// Scalar Multiplication.
 	    {
 	    }
-
-if (i == 6)		// Determinant.
+		else if (l == '5')		// Determinant.
 	    {
 	    }
-
-if (i == 7)		// Row echelon form.
+		else if (l == '6')		// Row echelon form.
 	    {
 	    }
-if (i == 8)		// Dot product.
+		else if (l == '7')		// Dot product.
 	    {
 	    }
-if (i == 9)		// Cross product.
+		else if (l == '8')		// Cross product.
 	    {
 	    }
-if (i == 10)		// (Mixed) product.
+		else if (l == '9')		// Mixed product.
 	    {
+	    }
+		else if (l == 'm')		// Main Menu.
+	    {goto Main_Menu;
+	    }
+		else if (l == 'q')		// Quit.
+	    {printf("Goodbye!");
+        exit(0);
 	    }	
-if(i > 10 || i < 1)
-{printf("Wrong Input! Try again..");
-goto oper;
+		else                    //Invalid Input.
+		{	printf("Invalid Input! Try again..2");
+			goto opi6;
+		}
+	}
+
+	else if (i == 'q')		//Quit.
+	{printf("Goodbye!");
+    exit(0);}
+
+	else	                //Invalid input.
+	{printf("Invalid input! Try again..(Maybe type 'm' for th main menu.\n\n");
+	goto start;
+	}
+	return 0;
 }
-      
-return 0;
-    
-}
-  
- 
