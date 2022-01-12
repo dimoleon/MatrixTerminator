@@ -1,7 +1,7 @@
 #include "matrix.h"
 
 //probably works
-void realref(float **p, int rowc, int colc) {
+void realrref(float **p, int rowc, int colc) {
 	int lead = 0; 
 	for(int r = 0; r < rowc; r++) {
 		if(colc <= lead)
@@ -29,11 +29,7 @@ void realref(float **p, int rowc, int colc) {
 			if(h != r) {
 				float treason = p[h][lead]; 
 				for(int j = 0; j < colc; j++) 
-					if(j == lead)
-						p[h][j] = 0; 
-					else 
-						p[h][j] -= (p[r][j]/p[r][lead])*treason;
-					
+					p[h][j] -= (p[r][j]/p[r][lead])*treason;
 			}
 		}
 
@@ -41,7 +37,7 @@ void realref(float **p, int rowc, int colc) {
 	}
 }
 //needs to be fixed, especially the allocation checks;
-void ref(struct matrix *m) {
+void rref(struct matrix *m) {
 	int rowc = m->rows, colc = m->cols;
 	float **p; 
 	p = (float **) malloc(rowc * sizeof(float)); 
