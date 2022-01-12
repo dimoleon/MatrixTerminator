@@ -48,7 +48,7 @@ void rref(struct matrix *m) {
 		for(int j = 0; j < colc; j++) 
 			p[i][j] = m->pin[i*colc + j]; 
 
-	realref(p, rowc, colc); 	
+	realrref(p, rowc, colc); 	
 	
 	for(int i = 0; i < rowc; i++)
 		for(int j = 0; j < colc; j++) 
@@ -71,7 +71,7 @@ int main() {
 */
 	show_matrix(m);
 	putchar('\n'); 
-	ref(m); 
+	rref(m); 
 	show_matrix(m);  
 }
 
