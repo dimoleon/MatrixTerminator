@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-char i, j, k , l, input[1023];
+char a, b, c , d, input[1023];
 int main (void) 
 {
   
 	printf ("What do you want the program to do? (Type 'm' for the main menu.)\n");
 	start:
 	fgets(input, 1024, stdin); 
-	i = input[0]; 
-	if (i == 'm')		    //Main Menu.
+	a = input[0]; 
+	if (a == 'm')		    //Main Menu.
     
     {Main_Menu:
       printf
@@ -18,43 +18,43 @@ int main (void)
 	goto start;
     }
       
-	else if (i == '1')		// Create Matrix.
+	else if (a == '1')		// Create Matrix.
 	{ 	printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)\n");
     	opi1:
 		fgets(input, 1024, stdin);
-		k = input[0];
-    	if (k == '1'){} 		                     //Create New.
-    	if (k == '2'){}			                     // Copy other.
-    	if (k == '3'){}			                     //Pull Values.
-		if (k == 'q')                                //Quit.
+		c = input[0];
+    	if (c == '1'){} 		                     //Create New.
+    	if (c == '2'){}			                     // Copy other.
+    	if (c == '3'){}			                     //Pull Values.
+		if (c == 'q')                                //Quit.
         {printf("Goodbye!");           
         exit(0);}   
-		if (k == 'm')
+		if (c == 'm')
 		{goto Main_Menu;}			                 // Main Menu.
-    	if( k != 1 && k != 2 && k != 3)
+    	if( c != 1 && c != 2 && c != 3)
 		{printf("Invalid input! Try again..1\n\n");
     	goto opi1;}
 	}
       
-	else if (i == '2')		// Load Matrix.
+	else if (a == '2')		// Load Matrix.
 	{	printf("Give path to import file");
 	}
       
-	else if (i == '3')		// Edit Matrix.
+	else if (a == '3')		// Edit Matrix.
 	{
 	}
       
-	else if (i == '4')		// View Existing Matrices.
+	else if (a == '4')		// View Existing Matrices.
 	{	
 		printf("Do you want to show all matrices (0) or a single?(1).\n");
         opi4:
 		fgets(input, 1024, stdin);
-		j = input[0];
-		if(j == '0'){}		        // Show all.
-		else if(j == '1'){}		    //Show single.
-		else if(j == 'm')		    //Main Menu.
+		b = input[0];
+		if(b == '0'){}		        // Show all.
+		else if(b == '1'){}		    //Show single.
+		else if(b == 'm')		    //Main Menu.
 			{goto Main_Menu;} 
-		else if(j == 'q')		    //Quit.
+		else if(b == 'q')		    //Quit.
 			{printf("Goodbye!");
         	exit(0);}
         else                        //Invalid input.
@@ -62,12 +62,12 @@ int main (void)
         	goto opi4;}
 	}
 
-	else if (i == '5')		// Write.
+	else if (a == '5')		// Write.
 	{
 
 	}                   
 
-	else if (i == '6')		// Do Operations with Matrices.
+	else if (a == '6')		// Do Operations with Matrices.
 	{
 	  printf
 	    ("These are the operation codes:\n-Addition(0).\n-Subtraction(1).\n-Multiplication(2).\n-Transposition(3)."
@@ -75,41 +75,41 @@ int main (void)
         "\n\n-Dot product(7).\n-Cross product(Only 3D)(8).\n-Mixed product(Only 3D)(9).\n");
 		opi6:
 		fgets(input, 1024, stdin);
-		l = input[0];	  
-		if (l == '0')		    // Addition.
+		d = input[0];	  
+		if (d == '0')		    // Addition.
 	    {
 	    }
-		else if (l == '1')		// Subtraction.
+		else if (d == '1')		// Subtraction.
 	    {
 	    }
-		else if (l == '2')		// Multiplication.
+		else if (d == '2')		// Multiplication.
 	    {
 	    }
-		else if (l == '3')		// Transposition.
+		else if (d == '3')		// Transposition.
 	    {
 	    }
-		else if (l == '4')		// Scalar Multiplication.
+		else if (d == '4')		// Scalar Multiplication.
 	    {
 	    }
-		else if (l == '5')		// Determinant.
+		else if (d == '5')		// Determinant.
 	    {
 	    }
-		else if (l == '6')		// Row echelon form.
+		else if (d == '6')		// Row echelon form.
 	    {
 	    }
-		else if (l == '7')		// Dot product.
+		else if (d == '7')		// Dot product.
 	    {
 	    }
-		else if (l == '8')		// Cross product.
+		else if (d == '8')		// Cross product.
 	    {
 	    }
-		else if (l == '9')		// Mixed product.
+		else if (d == '9')		// Mixed product.
 	    {
 	    }
-		else if (l == 'm')		// Main Menu.
+		else if (d == 'm')		// Main Menu.
 	    {goto Main_Menu;
 	    }
-		else if (l == 'q')		// Quit.
+		else if (d == 'q')		// Quit.
 	    {printf("Goodbye!");
         exit(0);
 	    }	
@@ -119,7 +119,7 @@ int main (void)
 		}
 	}
 
-	else if (i == 'q')		//Quit.
+	else if (a == 'q')		//Quit.
 	{printf("Goodbye!");
     exit(0);}
 
@@ -129,3 +129,4 @@ int main (void)
 	}
 	return 0;
 }
+//Be careful with the comments after if statements, they may end up after the {} brackets..
