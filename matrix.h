@@ -6,6 +6,7 @@
 
 #define mxid 10
 const int mxdim = 20;
+bool interactive = true; 
 
 //fundamental definition of the matrix structure 
 struct matrix {
@@ -68,7 +69,9 @@ int search_id(char s[mxid], const struct matrix_list *v) {
 //ask matrix id, user input; needs character limit without termination probably fgets?; 
 //need to check if in database; (seperate function above, search_id) DONE!
 void query_id(char s[mxid], const struct matrix_list *v) {
-    printf("Give matrix name (max 10 characters, no spaces): "); 
+    if(interactive)
+        printf("Give matrix name (max 10 characters, no spaces): "); 
+
     scanf("%s", s);
     if(v) {
         while(search_id(s, v) != -1) {
@@ -82,7 +85,9 @@ void query_id(char s[mxid], const struct matrix_list *v) {
 //ask dimensions, user input; problematic if user inputs characters!
 void query_dim(int *pr, int *pc) {
     do {
-        printf("Give number of rows: ");
+        if(interactive) 
+            printf("Give number of rows: ");
+
         scanf("%d", pr); 
         if(*pr > mxdim || *pr < 1)
             printf("Dimensions must be positive and less than %d\n", mxdim+1); 
@@ -100,7 +105,8 @@ void query_dim(int *pr, int *pc) {
 void query_values(struct matrix *empty) {
     for(int i = 0; i < empty->rows; i++) {
         for(int j = 0; j < empty->cols; j++) {
-            printf("Give value of %s[%d][%d]: ", empty->id, i+1, j+1); 
+            if(interactive)
+                printf("Give value of %s[%d][%d]: ", empty->id, i+1, j+1); 
             scanf("%f", &empty->pin[i*empty->cols + j]); 
         }
     }
@@ -117,6 +123,7 @@ void show_matrix(struct matrix *mat) {
         }
         putchar('\n');
     }
+    putchar('\n'); 
 }
 
 //transpose matrix
@@ -179,12 +186,12 @@ void copy_matrix(struct matrix *kid, const struct matrix *parent) {
 //sane reduced row echelon form on a 2D array; probably works; returns number of row exchanges;
 int realrref(float **p, int rowc, int colc) {
     //pivot column coordinate, number of row exchanges; used in determinant; 
-    int lead = 0, int count = 0; 
+    int lead = 0, count = 0; 
 
     //find current pivot coordinates
     for(int r = 0; r < rowc; r++) {
         if(colc <= lead)
-            return;
+            return count; 
         int i = r;
         while(p[i][lead] == 0) {
             i++;
@@ -192,7 +199,7 @@ int realrref(float **p, int rowc, int colc) {
                 i = r;
                 lead++; 
                 if(colc == lead) 
-                    return; 
+                    return count; 
             }
         }
         //exchange rows if pivot not in current row
@@ -303,7 +310,7 @@ int rank(struct matrix *m) {
         free(p[row]); 
     free(p);
 
-    int rank = m; 
+    int rank = rowc; 
     for(int i = 0; i < rowc; i++) {
         bool allzero = true; 
         for(int j = 0; j < colc; j++) {
