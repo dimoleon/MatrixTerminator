@@ -31,10 +31,11 @@ Initial
 	c. Multiplication (done)
 	d. Transpose (done)
 	e. Scalar multiplication (done)
-	f. Determinant 
-	g. (Row echelon form)
-	h. Dot product (vector only)
-	i. Cross product (vector only) 
-	j. (Mixed) product (vector only)
+	f. Determinant (done)
+	g. Reduced Row echelon form (done)
+	h. Rank (done)
+	i. Dot product (vector only) (done)
+	j. Cross product (vector only) (done)
+	k. (Mixed) product (vector only) (done)
 
 

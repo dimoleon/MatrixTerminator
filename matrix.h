@@ -70,13 +70,11 @@ int search_id(char s[mxid], const struct matrix_list *v) {
 void query_id(char s[mxid], const struct matrix_list *v) {
     printf("Give matrix name (max 10 characters, no spaces): "); 
     scanf("%s", s);
-    fflush(stdin);
     if(v) {
         while(search_id(s, v) != -1) {
             puts("Duplicate names not allowed! Try again."); 
             printf("Give matrix name (max 10 characters, no spaces): "); 
             scanf("%s", s); 
-            fflush(stdin); 
         }
     }
 }
@@ -84,7 +82,6 @@ void query_id(char s[mxid], const struct matrix_list *v) {
 //ask dimensions, user input; problematic if user inputs characters!
 void query_dim(int *pr, int *pc) {
     do {
-        fflush(stdin); 
         printf("Give number of rows: ");
         scanf("%d", pr); 
         if(*pr > mxdim || *pr < 1)
@@ -92,7 +89,6 @@ void query_dim(int *pr, int *pc) {
     } while(*pr > mxdim || *pr < 1);
 
     do {
-        fflush(stdin); 
         printf("Give number of cols: ");
         scanf("%d", pc); 
         if(*pc > mxdim || *pc < 1)
@@ -178,3 +174,148 @@ void copy_matrix(struct matrix *kid, const struct matrix *parent) {
         for(int j = 0; j < kid->cols; j++)
             kid->pin[i*kid->rows + j] = parent->pin[i*parent->rows + j]; 
 } 
+
+
+//sane reduced row echelon form on a 2D array; probably works; returns number of row exchanges;
+int realrref(float **p, int rowc, int colc) {
+    //pivot column coordinate, number of row exchanges; used in determinant; 
+    int lead = 0, int count = 0; 
+
+    //find current pivot coordinates
+    for(int r = 0; r < rowc; r++) {
+        if(colc <= lead)
+            return;
+        int i = r;
+        while(p[i][lead] == 0) {
+            i++;
+            if(rowc == i) {
+                i = r;
+                lead++; 
+                if(colc == lead) 
+                    return; 
+            }
+        }
+        //exchange rows if pivot not in current row
+        if(i != r) {
+            count++; 
+            for(int j = 0; j < colc; j++) {
+                float temp = p[i][j];
+                p[i][j] = p[r][j];
+                p[r][j] = temp; 
+            }
+        }
+        //perform the elimination (downwards and upwards)
+        for(int h = 0; h < rowc; h++) {
+            if(h != r) {
+                float treason = p[h][lead]; 
+                for(int j = 0; j < colc; j++) 
+                    p[h][j] -= (p[r][j]/p[r][lead])*treason;
+            }
+        }
+        //next column
+        lead++; 
+    }
+
+    return count; 
+}
+
+//creates a 2D array, copies the values of the matrix, passes to realrref, and copies back the new values; 
+void rref(struct matrix *m) {
+    int rowc = m->rows, colc = m->cols;
+    float **p; 
+    p = (float **) malloc(rowc * sizeof(float)); 
+    assert(p); 
+    for(int row = 0; row < rowc; row++) {
+        p[row] = (float *) malloc(colc * sizeof(float)); 
+        assert(p[row]);
+    }
+
+    for(int i = 0; i < rowc; i++) 
+        for(int j = 0; j < colc; j++) 
+            p[i][j] = m->pin[i*colc + j]; 
+
+    realrref(p, rowc, colc);    
+    
+    for(int i = 0; i < rowc; i++)
+        for(int j = 0; j < colc; j++) 
+            m->pin[i*colc + j] = p[i][j]; 
+
+    for(int row = 0; row < rowc; row++)
+        free(p[row]); 
+    free(p); 
+} 
+
+//returns the determinant of square matrix;
+float determinant(struct matrix *m) {
+
+    int rowc = m->rows, colc = m->cols;
+    assert(rowc == colc); 
+
+    float **p; 
+    p = (float **) malloc(rowc * sizeof(float)); 
+    assert(p); 
+    for(int row = 0; row < rowc; row++) {
+        p[row] = (float *) malloc(colc * sizeof(float)); 
+        assert(p[row]);
+    }
+
+    for(int i = 0; i < rowc; i++) 
+        for(int j = 0; j < colc; j++) 
+            p[i][j] = m->pin[i*colc + j]; 
+
+    int coeffexp = realrref(p, rowc, colc) % 2;    
+
+    float det = 1;
+    for(int i = 0; i < rowc; i++) {
+        det *= p[i][i];
+    }
+
+    for(int row = 0; row < rowc; row++)
+        free(p[row]); 
+    free(p);
+
+    if(coeffexp == 1)
+        det *= -1; 
+
+    return det;
+}
+
+//returns the rank of the matrix; 
+int rank(struct matrix *m) {
+    int rowc = m->rows, colc = m->cols;
+
+    float **p; 
+    p = (float **) malloc(rowc * sizeof(float)); 
+    assert(p); 
+    for(int row = 0; row < rowc; row++) {
+        p[row] = (float *) malloc(colc * sizeof(float)); 
+        assert(p[row]);
+    }
+
+    for(int i = 0; i < rowc; i++) 
+        for(int j = 0; j < colc; j++) 
+            p[i][j] = m->pin[i*colc + j]; 
+
+    realrref(p, rowc, colc);  
+
+
+    for(int row = 0; row < rowc; row++)
+        free(p[row]); 
+    free(p);
+
+    int rank = m; 
+    for(int i = 0; i < rowc; i++) {
+        bool allzero = true; 
+        for(int j = 0; j < colc; j++) {
+            if(p[i][j] != 0) {
+                allzero = false; 
+                break;
+            }
+        }
+
+        if(allzero)
+            rank--;
+    }
+
+    return rank; 
+}
