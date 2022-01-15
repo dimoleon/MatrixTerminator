@@ -1,5 +1,5 @@
 /* 
-MATRIX TERMINATOR
+MATRIX TERMINATOR ::)
 */
 
 #include "matrix.h"
@@ -60,6 +60,8 @@ opi1:
                 goto end; 
             }
             query_values(new); 
+
+            show_matrix(new); 
 
             insert(new, &v); 
             new = NULL; 
@@ -128,16 +130,25 @@ opi1:
         interactive = false; 
 
         printf("Give path to import file: "); 
-        char filepath[1023]; 
-        fgets(filepath, 1024, stdin); 
-        filepath[strlen(filepath) - 1] = '\0'; 
+        char loadpath[1023]; 
+        fgets(loadpath, 1024, stdin); 
+        loadpath[strlen(loadpath) - 1] = '\0'; 
 
-        FILE * reader; 
-        reader = fopen(filepath, "r"); 
+        reader = fopen(loadpath, "r"); 
+        if(!reader) {
+            puts("File not found. Going back...");
+            goto start; 
+        }
 
-        while(!feof(reader)) {
-             
-
+        int num;
+        fscanf(reader, "%d", &num); 
+        for(int i = 0; i < num; i++) {
+            query_id(name, v);  
+            query_dim(&r, &c); 
+            init_matrix(&new, r, c, name);
+            query_values(new); 
+            insert(new, &v); 
+            real++; 
         }
 
         fclose(reader); 
@@ -200,8 +211,28 @@ opi4:
     }
     else if(a == '5')   //Write to memory; 
     {
-
         interactive = false; 
+        if(!v || real == 0) {
+            puts("There is currently no matrix stored in memory.");
+            goto start; 
+        }
+
+        printf("Give path to export file: "); 
+        char writepath[1023]; 
+        fgets(writepath, 1024, stdin); 
+        writepath[strlen(writepath) - 1] = '\0';
+
+        writer = fopen(writepath, "w"); 
+        if(!writer) {
+            puts("Unable to find or create file. Going back..."); 
+            goto start; 
+        }
+
+        fprintf(writer, "%d\n\n", real); 
+        for(int i = 0; i < v->size; i++) 
+            if(v->e[i]) 
+                show_matrix(v->e[i]);
+
         goto start; 
 
     }

@@ -8,6 +8,12 @@
 const int mxdim = 20;
 bool interactive = true; 
 
+FILE * reader; 
+#define READP (interactive) ? (stdin) : (reader)
+
+FILE * writer; 
+#define WRITEP (interactive) ? (stdout) : (writer) 
+    
 //fundamental definition of the matrix structure 
 struct matrix {
     char id[mxid];  //name
@@ -72,7 +78,7 @@ void query_id(char s[mxid], const struct matrix_list *v) {
     if(interactive)
         printf("Give new matrix name (max 10 characters, no spaces): "); 
 
-    scanf("%s", s);
+    fscanf(READP, "%s", s);
     if(v) {
         while(search_id(s, v) != -1) {
             puts("Duplicate names not allowed! Try again."); 
@@ -88,14 +94,16 @@ void query_dim(int *pr, int *pc) {
         if(interactive) 
             printf("Give number of rows: ");
 
-        scanf("%d", pr); 
+        fscanf(READP, "%d", pr); 
         if(*pr > mxdim || *pr < 1)
             printf("Dimensions must be positive and less than %d\n", mxdim+1); 
     } while(*pr > mxdim || *pr < 1);
 
     do {
-        printf("Give number of cols: ");
-        scanf("%d", pc); 
+        if(interactive) 
+            printf("Give number of cols: ");
+
+        fscanf(READP, "%d", pc); 
         if(*pc > mxdim || *pc < 1)
             printf("Dimensions must be positive and less than %d\n", mxdim+1); 
     } while(*pc > mxdim || *pc < 1);
@@ -107,7 +115,7 @@ void query_values(struct matrix *empty) {
         for(int j = 0; j < empty->cols; j++) {
             if(interactive)
                 printf("Give value of %s[%d][%d]: ", empty->id, i+1, j+1); 
-            scanf("%f", &empty->pin[i*empty->cols + j]); 
+            fscanf(READP, "%f", &empty->pin[i*empty->cols + j]); 
         }
     }
 }
@@ -115,15 +123,16 @@ void query_values(struct matrix *empty) {
 
 //show fundamental values of given matrix 
 void show_matrix(struct matrix *mat) {
-    puts(mat->id); 
-    printf("%d %d\n", mat->rows, mat->cols);
+    fputs(mat->id, WRITEP); 
+    fputc('\n', WRITEP); 
+    fprintf(WRITEP, "%d %d\n", mat->rows, mat->cols);
     for(int i = 0; i < mat->rows; i++) {
         for(int j = 0; j < mat->cols; j++) {
-            printf("%.2f\t", mat->pin[i*(mat->cols) + j]);
+            fprintf(WRITEP, "%.2f\t", mat->pin[i*(mat->cols) + j]);
         }
-        putchar('\n');
+        fputc('\n', WRITEP);
     }
-    putchar('\n'); 
+    fputc('\n', WRITEP); 
 }
 
 //transpose matrix
