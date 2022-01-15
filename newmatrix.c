@@ -12,7 +12,7 @@ int main(void) {
     //helper variables; 
     struct matrix *new = NULL;
     char name[mxid]; 
-    int r, c, real = 0, index, first, second, third;
+    int r, c, real = 0, index, first, second, third, error = 0;
     char a, b, f, d, input[1023]; 
 
 
@@ -40,34 +40,40 @@ Main_menu:
     } 
     else if(a == '1') 
     {
-        printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)\n");
 
 opi1: 
+
+        printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)\n");
 
         fgets(input, 1024, stdin); 
         f = input[0]; 
         input[strlen(input) - 1] = '\0';  
 
-        if(f == '1') 
+        if(f == '1') //new matrix
         {
             query_id(name, v);
             query_dim(&r, &c); 
 
-            init_matrix(&new, r, c, name); 
+            error = init_matrix(&new, r, c, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             query_values(new); 
 
             insert(new, &v); 
             new = NULL; 
             real++;
+
             getchar();
             goto start; 
         }
 
-        if(f == '2') 
+        if(f == '2') //copy matrix
         {
             if(!v || real == 0) {
-                puts("There is currently no other matrix stored in memory. Try again"); 
-                goto opi1; 
+                puts("There is currently no other matrix stored in memory. Going back..."); 
+                goto start; 
             }
 
             char help[mxid]; 
@@ -81,7 +87,11 @@ opi1:
                     puts("Name not found, try again."); 
             } while(index == -1);
 
-            init_matrix(&new, (v->e[index])->rows, v->e[index]->cols, name);
+            error = init_matrix(&new, (v->e[index])->rows, v->e[index]->cols, name);
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             copy_matrix(new, v->e[index]);
 
             insert(new, &v); 
@@ -91,17 +101,17 @@ opi1:
             goto start; 
         }
 
-        if(f == '3')
+        if(f == '3') //pull values
         {
 
         }
 
-        if(f == 'q')
+        if(f == 'q') //quit
         {
             goto end;  
         }
 
-        if(f == 'm')
+        if(f == 'm') //menu 
         {
             goto Main_menu;
         }
@@ -116,8 +126,21 @@ opi1:
     else if(a == '2')   //Load Matrix; 
     {
         interactive = false; 
-        printf("Give path to import file: "); 
 
+        printf("Give path to import file: "); 
+        char filepath[1023]; 
+        fgets(filepath, 1024, stdin); 
+        filepath[strlen(filepath) - 1] = '\0'; 
+
+        FILE * reader; 
+        reader = fopen(filepath, "r"); 
+
+        while(!feof(reader)) {
+             
+
+        }
+
+        fclose(reader); 
         goto start; 
     }
     else if(a == '3')   //Edit Matrix;
@@ -156,9 +179,9 @@ opi4:
                     puts("Name not found, try again."); 
             } while(index == -1);
             show_matrix(v->e[index]); 
+
             getchar();
             goto start;
-
         }
         else if(b == 'm')   //Main Menu; 
         {
@@ -201,35 +224,256 @@ opi6:
 
         if(d == '0')    //Addition; 
         {
+            puts("Add two matrices. They must have the same dimensions!"); 
+
+            do {
+                printf("Give the name of the first matrix you want to add: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]); 
+
+            do {
+                printf("Give the name of the second matrix you want to add: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]); 
+
+            if((v->e[first])->cols != (v->e[second])->cols || (v->e[first])->rows != (v->e[second])->cols) {
+                puts("These matrices don't have the same dimensions. Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+            query_id(name, v); 
+            error = init_matrix(&new, (v->e[first])->rows, (v->e[first])->cols, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+
+            sum(new, v->e[first], v->e[second]); 
+            show_matrix(new); 
+
+            insert(new, &v); 
+            real++; 
+            new = NULL;
+
+            getchar(); 
+            goto start;  
 
         }
         else if(d == '1')   //Substraction; 
         {
 
+            puts("Substract two matrices. They must have the same dimensions!"); 
+
+            do {
+                printf("Give the name of the substrahend matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]); 
+
+            do {
+                printf("Give the name of the substractor matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+            if((v->e[first])->cols != (v->e[second])->cols || (v->e[first])->rows != (v->e[second])->cols) {
+                puts("These matrices don't have the same dimensions. Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+            query_id(name, v); 
+            error = init_matrix(&new, (v->e[first])->rows, (v->e[first])->cols, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+
+            difference(new, v->e[first], v->e[second]); 
+            show_matrix(new); 
+
+            insert(new, &v); 
+            real++; 
+            new = NULL;
+
+            getchar(); 
+            goto start;  
         }
         else if(d == '2')   //Multiplication; 
         {
-            
+             
+            puts("Multiply two matrices. The number of columns of the first must be equal to the number of rows of the second!"); 
+
+            do {
+                printf("Give the name of the first multiplier matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]); 
+
+            do {
+                printf("Give the name of the second multiplier matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]); 
+
+            if((v->e[first])->cols != (v->e[second])->rows) {
+                puts("These matrices don't meet the dimension requirements for multiplication! Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+            query_id(name, v); 
+            error = init_matrix(&new, (v->e[first])->rows, (v->e[second])->cols, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+
+            product(new, v->e[first], v->e[second]); 
+            show_matrix(new);
+
+            insert(new, &v); 
+            real++; 
+            new = NULL;
+
+            getchar(); 
+            goto start;  
+
         }
         else if(d == '3')   //Transposition; 
         {
-            
+            puts("Produce the transpose of a matrix."); 
+
+            do {
+                printf("Give the name of the matrix to be transposed: ");
+                scanf("%s", name); 
+                index = search_id(name, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1);
+
+            show_matrix(v->e[index]); 
+
+            query_id(name, v); 
+            error = init_matrix(&new, (v->e[index])->cols, (v->e[index])->rows, name); 
+            if(error) {
+                puts("Error! Abort ship"); 
+                goto end; 
+            }
+            transpose(new, v->e[index]); 
+            show_matrix(new); 
+
+            insert(new, &v); 
+            real++;
+            new = NULL; 
+
+            getchar();
+            goto start; 
         }
         else if(d == '4')   //Scalar Multiplication; 
         {
-            
+            do {
+                printf("Give the name of the matrix to be scaled: ");
+                scanf("%s", name); 
+                index = search_id(name, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1);
+
+            scalar(v->e[index]); 
+            show_matrix(v->e[index]); 
+
+            getchar(); 
+            goto start;           
         }
         else if(d == '5')   //Determinant; 
-        {
-            
+        {   
+            puts("Find the determinant of a square matrix. BETA ALGORITHM"); 
+
+            do {
+                printf("Give the name of the matrix: ");
+                scanf("%s", name); 
+                index = search_id(name, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1); 
+
+            show_matrix(v->e[index]); 
+
+            if((v->e[index])->rows != (v->e[index])->cols) {
+                puts("This is not a square matrix. Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+            printf("The determinant is: %.2f\n", determinant(v->e[index])); 
+
+            getchar(); 
+            goto start; 
         }
         else if(d == '6')   //Rank; 
         {
-            
+            puts("Find the rank of a  matrix. BETA ALGORITHM"); 
+
+            do {
+                printf("Give the name of the matrix: ");
+                scanf("%s", name); 
+                index = search_id(name, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1); 
+
+            show_matrix(v->e[index]); 
+
+            printf("The rank is: %d\n", rank(v->e[index])); 
+
+            getchar(); 
+            goto start;  
         }
-        else if(d == '7')   //Row echelon form; 
+        else if(d == '7')   //Reduced Row echelon form; 
         {
-            
+            puts("Attention! Reducing to row echelon form doesn't create a new matrix, but it modifies the given one. BETA ALGORITHM");
+
+            do {
+                printf("Give the name of the matrix to be reduced to row echelon form: ");
+                scanf("%s", name); 
+                index = search_id(name, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1);
+
+            rref(v->e[index]); 
+            show_matrix(v->e[index]); 
+
+            getchar();
+            goto start; 
         }
         else if(d == 'a')   //Dot product; 
         {

@@ -40,7 +40,7 @@ void delete_matrix(struct matrix **ptr) {
     *ptr = NULL; 
 }
 
-//insert matrix in memory array (super cool), double size of memory if it doesn't fit. 
+//matrix in memory array (super cool), double size of memory if it doesn't fit. 
 int insert(struct matrix *m, struct matrix_list **mem) {
     size_t x = *mem ? mem[0]->size : 0;
     size_t y = x + 1; 
@@ -70,7 +70,7 @@ int search_id(char s[mxid], const struct matrix_list *v) {
 //need to check if in database; (seperate function above, search_id) DONE!
 void query_id(char s[mxid], const struct matrix_list *v) {
     if(interactive)
-        printf("Give matrix name (max 10 characters, no spaces): "); 
+        printf("Give new matrix name (max 10 characters, no spaces): "); 
 
     scanf("%s", s);
     if(v) {
@@ -128,6 +128,7 @@ void show_matrix(struct matrix *mat) {
 
 //transpose matrix
 void transpose(struct matrix *transp, const struct matrix *orig) {
+    assert(transp->rows == orig->cols && transp->cols == orig->rows); 
     for(int i = 0; i < orig->rows; i++)
         for(int j = 0; j < orig->cols; j++)
             (transp->pin)[j*orig->rows + i] = orig->pin[i*orig->cols  + j];
