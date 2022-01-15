@@ -175,13 +175,13 @@ void product(struct matrix *prod, const struct matrix *left, const struct matrix
 
 //scalar multiplication, modifies matrix, doesn't create new matrix; 
 void scalar(struct matrix *m) {
-    float c; 
+    float sc; 
     puts("Attention! Multiplication by scalar doesn't create a new matrix, but it modifies the given one.");
     printf("Give the value of the scalar: ");
-    scanf("%f", &c); 
+    scanf("%f", &sc); 
     for(int i = 0; i < m->rows; i++) 
         for(int j = 0; j < m->cols; j++) 
-            m->pin[i*m->rows + j]; 
+            m->pin[i*m->cols + j] *= sc; 
 } 
 
 //copies values of old matrix to new matrix, similar to strcpy;

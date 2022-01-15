@@ -13,7 +13,7 @@ int main(void) {
     struct matrix *new = NULL;
     char name[mxid]; 
     int r, c, real = 0, index, first, second, third, error = 0;
-    char a, b, f, d, input[1023]; 
+    char a, b, f, d, input[1024]; 
 
 
 start:
@@ -63,7 +63,11 @@ opi1:
 
             show_matrix(new); 
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             new = NULL; 
             real++;
 
@@ -96,7 +100,11 @@ opi1:
             }
             copy_matrix(new, v->e[index]);
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             new = NULL; 
             real++; 
             getchar();
@@ -130,7 +138,7 @@ opi1:
         interactive = false; 
 
         printf("Give path to import file: "); 
-        char loadpath[1023]; 
+        char loadpath[1024]; 
         fgets(loadpath, 1024, stdin); 
         loadpath[strlen(loadpath) - 1] = '\0'; 
 
@@ -147,11 +155,20 @@ opi1:
             query_dim(&r, &c); 
             init_matrix(&new, r, c, name);
             query_values(new); 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             real++; 
         }
 
         fclose(reader); 
+        if(num == 1)
+            printf("%d Matrix loaded successfully.\n", num); 
+        else 
+            printf("%d Matrices loaded successfully.\n", num); 
+
         goto start; 
     }
     else if(a == '3')   //Edit Matrix;
@@ -218,7 +235,7 @@ opi4:
         }
 
         printf("Give path to export file: "); 
-        char writepath[1023]; 
+        char writepath[1024]; 
         fgets(writepath, 1024, stdin); 
         writepath[strlen(writepath) - 1] = '\0';
 
@@ -234,8 +251,10 @@ opi4:
                 show_matrix(v->e[i]);
 
         fclose(writer); 
+        puts("Successful export."); 
+
         goto start; 
-        
+
     }
     else if(a == '6')   //Do Operations with Matrices;
     {
@@ -294,7 +313,11 @@ opi6:
             sum(new, v->e[first], v->e[second]); 
             show_matrix(new); 
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             real++; 
             new = NULL;
 
@@ -343,7 +366,11 @@ opi6:
             difference(new, v->e[first], v->e[second]); 
             show_matrix(new); 
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             real++; 
             new = NULL;
 
@@ -391,7 +418,11 @@ opi6:
             product(new, v->e[first], v->e[second]); 
             show_matrix(new);
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             real++; 
             new = NULL;
 
@@ -422,7 +453,11 @@ opi6:
             transpose(new, v->e[index]); 
             show_matrix(new); 
 
-            insert(new, &v); 
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
             real++;
             new = NULL; 
 
@@ -564,14 +599,6 @@ opi6:
         printf("Invalid input! Try again..(Maybe type 'm' for th main menu.\n\n");
         goto start; 
     }
-
-    
-/*
-    for(int i = 0; i < new->rows; i++) {
-        for(int j = 0; j < new->cols; j++) 
-            new->pin[i*(new->cols) + j] = rand()%20; 
-    }
-*/
 
 end:
 
