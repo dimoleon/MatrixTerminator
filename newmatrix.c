@@ -233,8 +233,9 @@ opi4:
             if(v->e[i]) 
                 show_matrix(v->e[i]);
 
+        fclose(writer); 
         goto start; 
-
+        
     }
     else if(a == '6')   //Do Operations with Matrices;
     {
