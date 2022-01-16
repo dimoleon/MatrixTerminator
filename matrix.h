@@ -336,3 +336,57 @@ int rank(struct matrix *m) {
 
     return rank; 
 }
+
+//returns the dot product of the two marices in the form of a double;
+double dot_product(struct matrix *A, struct matrix *B)
+{
+assert((A->cols) == 1 && (B->cols) == 1 && (A->rows) == (B->rows));
+double dp = 0;
+for(int i = 0; i<A->rows; i++)
+    {
+        dp = dp + ((A->pin[i]) * (B->pin[i]));
+    }
+
+return dp;
+}
+
+//Cross Product;
+void cross_product(struct matrix *A, struct matrix *B, struct matrix *CP)
+{
+    assert(A->rows == 3 && B->rows == 3 && (A->cols) == 1 && (B->cols) == 1);
+
+    CP->pin[0] = (A->pin[1] * B->pin[2]) - (A->pin[2] * B->pin[1]);
+    CP->pin[1] = (A->pin[2] * B->pin[0]) - (A->pin[0] * B->pin[2]);
+    CP->pin[2] = (A->pin[0] * B->pin[1]) - (A->pin[1] * B->pin[0]);
+}
+
+//Mixed product;
+double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
+{
+    assert(A->rows == 3 && B->rows == 3 && C->rows == 3 && (A->cols) == 1 && (B->cols) == 1 && (C->cols) == 1);
+
+    struct matrix *temp;
+    init_matrix(&temp, 3, 1, "temp");
+    cross_product(B, C, temp);
+    return dot_product(A, temp);
+}
+
+//edits one element of a given matrix;
+void edit(struct matrix *A)
+{
+    int i, j;
+    double new_value, temp;
+    printf("Whats the position of the element you want to edit?\n Format: (rows)<SPACE>(cols).\n");
+    scanf("%d %d", &i, &j);
+    getchar();
+    if(i > A->rows + 1 || j > A->cols || i < 1 || j < 1)
+    {
+        printf("Invalid Input! Going back to the start...\n");
+        exit(0); 
+    }
+    printf("What's the value you want to change it to?\n");
+    scanf("%lf", &new_value);
+    getchar();              
+    temp = floor(100*new_value)/100;        //To only get 2 decimals;
+    A->pin[(i-1)*(A->cols) +j-1] = new_value;
+}
