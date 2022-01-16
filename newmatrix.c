@@ -151,10 +151,14 @@ opi1:
         int num;
         fscanf(reader, "%d", &num); 
         for(int i = 0; i < num; i++) {
-            query_id(name, v);  
+            fscanf(reader, "%s", name); 
+            if(search_id(name, v) != -1)
+                continue;
+
             query_dim(&r, &c); 
             init_matrix(&new, r, c, name);
             query_values(new); 
+            
             error = insert(new, &v); 
             if(error) {
                 puts("Error! Abort ship");

@@ -340,14 +340,14 @@ int rank(struct matrix *m) {
 //returns the dot product of the two marices in the form of a double;
 double dot_product(struct matrix *A, struct matrix *B)
 {
-assert((A->cols) == 1 && (B->cols) == 1 && (A->rows) == (B->rows));
-double dp = 0;
-for(int i = 0; i<A->rows; i++)
-    {
-        dp = dp + ((A->pin[i]) * (B->pin[i]));
-    }
+    assert((A->cols) == 1 && (B->cols) == 1 && (A->rows) == (B->rows));
+    double dp = 0;
+    for(int i = 0; i<A->rows; i++)
+        {
+            dp = dp + ((A->pin[i]) * (B->pin[i]));
+        }
 
-return dp;
+    return dp;
 }
 
 //Cross Product;
@@ -393,5 +393,5 @@ void edit(struct matrix *A)
         scanf("%lf", &new_value);
         getchar();              
         A->pin[(i-1)*(A->cols) +j-1] = new_value;
-    }while(i != 0 || j != 0);
+    } while(i != 0 || j != 0);
 }
