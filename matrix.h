@@ -375,18 +375,23 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
 void edit(struct matrix *A)
 {
     int i, j;
-    double new_value, temp;
-    printf("Whats the position of the element you want to edit?\n Format: (rows)<SPACE>(cols).\n");
-    scanf("%d %d", &i, &j);
-    getchar();
-    if(i > A->rows + 1 || j > A->cols || i < 1 || j < 1)
-    {
-        printf("Invalid Input! Going back to the start...\n");
-        exit(0); 
-    }
-    printf("What's the value you want to change it to?\n");
-    scanf("%lf", &new_value);
-    getchar();              
-    temp = floor(100*new_value)/100;        //To only get 2 decimals;
-    A->pin[(i-1)*(A->cols) +j-1] = new_value;
+    double new_value;        
+    do{
+        printf("Whats the position of the element you want to edit?\n(To exit the loop insert 0 for any dimension)\nFormat: (rows)<SPACE>(cols).\n");
+        scanf("%d %d", &i, &j);
+        getchar();
+        if(i > A->rows + 1 || j > A->cols || i < 0 || j < 0)
+        {
+            printf("Invalid Input! Going back to the start...\n");
+            exit(0); 
+        }
+        if(i == 0 || j == 0)
+        {
+            continue;
+        }
+        printf("What's the value you want to change it to?\n");
+        scanf("%lf", &new_value);
+        getchar();              
+        A->pin[(i-1)*(A->cols) +j-1] = new_value;
+    }while(i != 0 || j != 0);
 }
