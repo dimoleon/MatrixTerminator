@@ -177,7 +177,19 @@ opi1:
     }
     else if(a == '3')   //Edit Matrix;
     {
+        do {
+        printf("Give the name of the  matrix you want to edit: ");
+        scanf("%s", name); 
+        first = search_id(name, v);  
+        if(first == -1)
+            puts("Name not found, try again."); 
+    } while(first == -1);
 
+    show_matrix(v->e[first]);
+    edit(v->e[first]);
+    show_matrix(v->e[first]);
+    goto start;
+        
     }
     else if(a == '4')   //View Existing Matrices; 
     {   
@@ -548,15 +560,133 @@ opi6:
         }
         else if(d == 'a')   //Dot product; 
         {
+             puts("To get the dot product of two column matrices, or vectors, they must have the same number of rows!");
+
+			do {
+                printf("Give the name of the first matrix of the dot product: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]);
+
+			do {
+                printf("Give the name of the second matrix of the dot product: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+			if((v->e[first])->cols != 1 || (v->e[second])->cols != 1 || (v->e[first])->rows != (v->e[second])->rows)
+			{		
+				puts("These matrices don't qualify for dot product. Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+			printf("The Dot product is %.2lf", dot_product(v->e[first], v->e[second]));
+
+            getchar(); 
+            goto start;
             
         }
         else if(d == 'b')   //Cross product; 
         {
+             puts("For the cross product both matrices must be vectors (column matrices) of 3D space.\nRemember, order matters!");
+
+			do {
+                printf("Give the name of the first matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]);
+
+			do {
+                printf("Give the name of the second matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+			if( (v->e[first])->rows != 3 || (v->e[second])->rows != 3 || (v->e[first])->cols != 1 || (v->e[second])->cols != 1) {
+				printf("The cross product is only defined for vectors in 3D space,\n # of rows = 3.\n # of cols = 1.");
+				getchar(); 
+                goto start;
+			} 
+			query_id(name, v); 
+            error = init_matrix(&new, 3, 1, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+
+			cross_product(v->e[first], v->e[second], new); 
+            show_matrix(new);
+
+            insert(new, &v); 
+            real++; 
+            new = NULL;
+
+            getchar(); 
+            goto start;
             
         }
         else if(d == 'c')   //Mixed product; 
         {
+            puts("All matrices must be vectors of 3D space!\nThe second and third vectors will be cross multiplied and the result will be dot multiplied by the first!");
 
+			do {
+                printf("Give the name of the first multiplier matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]); 
+
+            do {
+                printf("Give the name of the second multiplier matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+			do {
+                printf("Give the name of the third multiplier matrix: ");
+                scanf("%s", name); 
+                third = search_id(name, v);  
+                if(third == -1)
+                    puts("Name not found, try again."); 
+            } while(third == -1);
+
+            show_matrix(v->e[third]);
+
+			if( (v->e[first])->rows != 3 || (v->e[second])->rows != 3 || (v->e[third])->rows != 3 ||(v->e[first])->cols != 1 || (v->e[second])->cols != 1 || (v->e[third])->cols != 1) {
+				printf("The cross product is only defined for vectors in 3D space,\n # of rows = 3.\n # of cols = 1.");
+				getchar(); 
+                goto start;
+			}
+
+            printf("The Mixed Product of the three matrices is %.2lf", mixed_product(v->e[first], v->e[second], v->e[third]) ) ;
+            
+            getchar(); 
+            goto start;
+            
         }
         else if(d == 'm')   //Main Menu; 
         {
