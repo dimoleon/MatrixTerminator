@@ -371,7 +371,7 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     return dot_product(A, temp);
 }
 
-//edits one element of a given matrix;
+//edits one element of a given matrix
 void edit(struct matrix *A)
 {
     int i, j;
@@ -380,11 +380,7 @@ void edit(struct matrix *A)
         printf("Whats the position of the element you want to edit?\n(To exit the loop insert 0 for any dimension)\nFormat: (rows)<SPACE>(cols).\n");
         scanf("%d %d", &i, &j);
         getchar();
-        if(i > A->rows + 1 || j > A->cols || i < 0 || j < 0)
-        {
-            printf("Invalid Input! Going back to the start...\n");
-            exit(0); 
-        }
+        assert(i <= A->rows + 1 && j <= A->cols + 1 && i >= 0 && j >=0);
         if(i == 0 || j == 0)
         {
             continue;
@@ -393,5 +389,5 @@ void edit(struct matrix *A)
         scanf("%lf", &new_value);
         getchar();              
         A->pin[(i-1)*(A->cols) +j-1] = new_value;
-    } while(i != 0 || j != 0);
+    }while(i != 0 && j != 0);
 }
