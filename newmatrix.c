@@ -43,7 +43,7 @@ Main_menu:
 
 opi1: 
 
-        printf("-Create new Matrix(1)\n-Copy other Matrix.(2)\n-Pull values from other matrix in the form of rows and columns.(3)\n");
+        printf("-Create new matrix(1)\n-Copy other matrix.(2)\n-Extract row or column of a matrix to create separate vector.(3)\n");
 
         fgets(input, 1024, stdin); 
         f = input[0]; 
@@ -82,9 +82,9 @@ opi1:
                 goto start; 
             }
 
-            char help[mxid]; 
             query_id(name, v);  
 
+            char help[mxid]; 
             do {
                 printf("Give the name of the matrix you want to copy: "); 
                 scanf("%s", help); 
@@ -93,7 +93,7 @@ opi1:
                     puts("Name not found, try again."); 
             } while(index == -1);
 
-            error = init_matrix(&new, (v->e[index])->rows, v->e[index]->cols, name);
+            error = init_matrix(&new, (v->e[index])->rows, (v->e[index])->cols, name); //lol you little...
             if(error) {
                 puts("Error! Abort ship");
                 goto end; 
@@ -111,9 +111,89 @@ opi1:
             goto start; 
         }
 
-        if(f == '3') //pull values
+        if(f == '3') //Extract row or column to create vector; 
         {
+            if(!v || real == 0) {
+                puts("There is currently no other matrix stored in memory. Going back..."); 
+                goto start; 
+            }
 
+            char help[mxid]; 
+            do {
+                printf("Give the name of the matrix you will be extracting from: "); 
+                scanf("%s", help); 
+                index = search_id(help, v);  
+                if(index == -1)
+                    puts("Name not found, try again."); 
+            } while(index == -1);
+
+            show_matrix(v->e[index]); 
+            getchar(); 
+
+            int vecsize; 
+            bool roworcol;
+            char detail[7]; 
+
+            do {
+                printf("Do you want to extract a row or a column? (Type r for row, c for column or 0 to go back): "); 
+                fgets(input, 1024, stdin); 
+                char sel = input[0]; 
+                input[strlen(input) - 1] = '\0';
+                if(sel == 'r') {
+                    roworcol = true;
+                    break;
+                }
+                else if(sel == 'c') {
+                    roworcol = false;
+                    break;
+                }
+                else if(sel == '0')
+                    goto opi1;
+                else
+                    puts("Invalid input. Try again..."); 
+            } while(true);
+
+            if(roworcol) {
+                vecsize = (v->e[index])->cols; 
+                strcpy(detail, "row"); 
+            } else {
+                vecsize = (v->e[index])->rows; 
+                strcpy(detail, "column"); 
+            }
+
+            int n; 
+            while(true) {        
+                printf("Give the number of the %s you want to extract: ", detail); 
+                scanf("%d", &n); 
+                if(1 <= n && n <= vecsize)
+                    break;
+                puts("Out of bounds. Try again..."); 
+            }
+            n--;
+            query_id(name, v); 
+            error = init_matrix(&new, vecsize, 1, name); 
+            if(error) {
+                puts("Error. Abort ship"); 
+                goto end; 
+            }
+
+            if(roworcol) 
+                for(int i = 0; i < vecsize; i++) 
+                    new->pin[i] = (v->e[index])->pin[n*(v->e[index])->cols + i]; 
+            else
+                for(int i = 0; i < vecsize; i++) 
+                    new->pin[i] = (v->e[index])->pin[i*(v->e[index])->cols + n]; 
+
+            error = insert(new, &v);
+            if(error) {
+                puts("Error. Abort ship"); 
+                goto end; 
+            }
+
+            new = NULL; 
+            real++; 
+            getchar(); 
+            goto start; 
         }
 
         if(f == 'q') //quit
@@ -152,8 +232,9 @@ opi1:
         fscanf(reader, "%d", &num); 
         for(int i = 0; i < num; i++) {
             fscanf(reader, "%s", name); 
-            if(search_id(name, v) != -1)
-                continue;
+            if(v) 
+                if(search_id(name, v) != -1)
+                    continue;
 
             query_dim(&r, &c); 
             init_matrix(&new, r, c, name);
@@ -177,7 +258,21 @@ opi1:
     }
     else if(a == '3')   //Edit Matrix;
     {
+        do {
+            printf("Give the name of the  matrix you want to edit: ");
+            scanf("%s", name); 
+            first = search_id(name, v);  
+            if(first == -1)
+                puts("Name not found, try again."); 
+        } while(first == -1);
 
+        show_matrix(v->e[first]);
+
+        edit(v->e[first]);
+        show_matrix(v->e[first]);
+
+        getchar(); 
+        goto start;
     }
     else if(a == '4')   //View Existing Matrices; 
     {   
@@ -546,17 +641,135 @@ opi6:
             getchar();
             goto start; 
         }
-        else if(d == 'a')   //Dot product; 
+        else if(d == 'a')   //Dot product; got me there for a sec;  
         {
-            
+            puts("To get the dot product of two column matrices, or vectors, they must have the same number of rows!");
+
+            do {
+                printf("Give the name of the first matrix of the dot product: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]);
+
+            do {
+                printf("Give the name of the second matrix of the dot product: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+            if((v->e[first])->cols != 1 || (v->e[second])->cols != 1 || (v->e[first])->rows != (v->e[second])->rows)
+            {       
+                puts("These matrices don't qualify for dot product. Going back..."); 
+                getchar(); 
+                goto start; 
+            }
+
+            printf("The Dot product is %.2lf", dot_product(v->e[first], v->e[second]));
+            getchar(); 
+            goto start;  
         }
         else if(d == 'b')   //Cross product; 
         {
-            
+            puts("For the cross product both matrices must be vectors (column matrices) of 3D space.\nRemember, order matters!");
+
+            do {
+                printf("Give the name of the first matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]);
+
+            do {
+                printf("Give the name of the second matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+            if( (v->e[first])->rows != 3 || (v->e[second])->rows != 3 || (v->e[first])->cols != 1 || (v->e[second])->cols != 1) {
+                printf("The cross product is only defined for vectors in 3D space,\n # of rows = 3.\n # of cols = 1.");
+                getchar(); 
+                goto start;
+            } 
+            query_id(name, v); 
+            error = init_matrix(&new, 3, 1, name); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+
+            cross_product(v->e[first], v->e[second], new); 
+            show_matrix(new);
+
+            error = insert(new, &v); 
+            if(error) {
+                puts("Error! Abort ship");
+                goto end; 
+            }
+            real++; 
+            new = NULL;
+
+            getchar(); 
+            goto start;     
         }
         else if(d == 'c')   //Mixed product; 
         {
+            puts("All matrices must be vectors of 3D space!\nThe second and third vectors will be cross multiplied and the result will be dot multiplied by the first!");
 
+            do {
+                printf("Give the name of the first multiplier matrix: ");
+                scanf("%s", name); 
+                first = search_id(name, v);  
+                if(first == -1)
+                    puts("Name not found, try again."); 
+            } while(first == -1);
+
+            show_matrix(v->e[first]); 
+
+            do {
+                printf("Give the name of the second multiplier matrix: ");
+                scanf("%s", name); 
+                second = search_id(name, v);  
+                if(second == -1)
+                    puts("Name not found, try again."); 
+            } while(second == -1);
+
+            show_matrix(v->e[second]);
+
+            do {
+                printf("Give the name of the third multiplier matrix: ");
+                scanf("%s", name); 
+                third = search_id(name, v);  
+                if(third == -1)
+                    puts("Name not found, try again."); 
+            } while(third == -1);
+
+            show_matrix(v->e[third]);
+
+            if( (v->e[first])->rows != 3 || (v->e[second])->rows != 3 || (v->e[third])->rows != 3 ||(v->e[first])->cols != 1 || (v->e[second])->cols != 1 || (v->e[third])->cols != 1) {
+                printf("The cross product is only defined for vectors in 3D space,\n # of rows = 3.\n # of cols = 1.");
+                getchar(); 
+                goto start;
+            }
+
+            printf("The Mixed Product of the three matrices is %.2lf", mixed_product(v->e[first], v->e[second], v->e[third]));
+
+            getchar(); 
+            goto start; 
         }
         else if(d == 'm')   //Main Menu; 
         {

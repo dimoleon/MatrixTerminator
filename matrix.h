@@ -8,10 +8,10 @@
 const int mxdim = 20;
 bool interactive = true; 
 
-FILE * reader; 
+FILE * reader; //reader pointer
 #define READP (interactive) ? (stdin) : (reader)
 
-FILE * writer; 
+FILE * writer; //writer pointer
 #define WRITEP (interactive) ? (stdout) : (writer) 
     
 //fundamental definition of the matrix structure 
@@ -121,7 +121,7 @@ void query_values(struct matrix *empty) {
 }
 
 
-//show fundamental values of given matrix 
+//show fundamental values of given matrix, uses the WRITEP macro; 
 void show_matrix(struct matrix *mat) {
     fputs(mat->id, WRITEP); 
     fputc('\n', WRITEP); 
@@ -186,7 +186,7 @@ void scalar(struct matrix *m) {
 
 //copies values of old matrix to new matrix, similar to strcpy;
 void copy_matrix(struct matrix *kid, const struct matrix *parent) {
-    assert(kid->rows == parent->rows && kid->cols == parent->rows);
+    assert(kid->rows == parent->rows && kid->cols == parent->cols);
     for(int i = 0; i < kid->rows; i++)
         for(int j = 0; j < kid->cols; j++)
             kid->pin[i*kid->rows + j] = parent->pin[i*parent->rows + j]; 
@@ -368,26 +368,31 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     struct matrix *temp;
     init_matrix(&temp, 3, 1, "temp");
     cross_product(B, C, temp);
-    return dot_product(A, temp);
+    double res = dot_product(A, temp); 
+    delete_matrix(&temp); 
+
+    return res; 
 }
 
 //edits one element of a given matrix
 void edit(struct matrix *A)
 {
     int i, j;
-    double new_value;        
+    float new_value;        
     do{
         printf("Whats the position of the element you want to edit?\n(To exit the loop insert 0 for any dimension)\nFormat: (rows)<SPACE>(cols).\n");
         scanf("%d %d", &i, &j);
-        getchar();
-        assert(i <= A->rows + 1 && j <= A->cols + 1 && i >= 0 && j >=0);
+
         if(i == 0 || j == 0)
-        {
-            continue;
+            break;
+       
+        if(i >= A->rows + 1 || j >= A->cols + 1) {
+            puts("Cell coordinates out of bounds. Try again..."); 
+            continue; 
         }
         printf("What's the value you want to change it to?\n");
-        scanf("%lf", &new_value);
-        getchar();              
+        scanf("%f", &new_value);
         A->pin[(i-1)*(A->cols) +j-1] = new_value;
-    }while(i != 0 && j != 0);
+    } while(i != 0 && j != 0);
 }
+
