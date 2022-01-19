@@ -2,7 +2,7 @@
 MATRIX TERMINATOR ::)
 */
 
-#include "matrix.h"
+#include "matrixheader.h"
 
 //quick ERROR macro; primarily used for memory allocation checks; //stupidity at its finest; 
 #define ERROR(A) if(A) {puts("ERROR. Abort ship"); goto end;}
