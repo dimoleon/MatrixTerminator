@@ -16,16 +16,16 @@ FILE * writer; //writer pointer
     
 //fundamental definition of the matrix structure 
 struct matrix {
-    char id[mxid];  //name
-    int rows;       //# of rows 
-    int cols;       //# of columns 
-    float pin[];      //array of values 2D, disguised as 1D (follows the pin[i*cols + j] format)
+    char id[mxid];      //name
+    int rows;           //# of rows 
+    int cols;           //# of columns 
+    float pin[];        //array of values 2D, disguised as 1D (follows the pin[i*cols + j] format)
 };
 
 //dynamic array of matrices structure (wanna be)
 struct matrix_list {
-    size_t size; 
-    struct matrix *e[]; 
+    size_t size;        //current array size 
+    struct matrix *e[]; //array of pointers to struct matrix
 };
 
 //matrix initialization, given rows and columns and id; allocate memory 
@@ -40,13 +40,13 @@ int init_matrix(struct matrix **ptr, int r, int c, char name[mxid]) {
     return 0;
 }
 
-//delete matrix (needs check)
+//delete matrix, free memory and 'disable' the pointer;  
 void delete_matrix(struct matrix **ptr) {
     free(*ptr);
     *ptr = NULL; 
 }
 
-//matrix in memory array (super cool), double size of memory if it doesn't fit. 
+//insert matrix in memory vector (super cool), double size of memory if it doesn't fit. 
 int insert(struct matrix *m, struct matrix_list **mem) {
     size_t x = *mem ? mem[0]->size : 0;
     size_t y = x + 1; 
@@ -72,7 +72,7 @@ int search_id(char s[mxid], const struct matrix_list *v) {
     return -1;
 }
 
-//ask matrix id, user input; needs character limit without termination probably fgets?; 
+//ask matrix id, user input; 
 //need to check if in database; (seperate function above, search_id) DONE!
 void query_id(char s[mxid], const struct matrix_list *v) {
     if(interactive)
@@ -102,7 +102,7 @@ int indexing(struct matrix_list *v, char message[200]) {
     return index; 
 }
 
-//ask dimensions, user input; problematic if user inputs characters!
+//ask dimensions (for new matrix creation), user input; 
 void query_dim(int *pr, int *pc) {
     do {
         if(interactive) 
@@ -123,7 +123,7 @@ void query_dim(int *pr, int *pc) {
     } while(*pc > mxdim || *pc < 1);
 }
 
-//ask values, user input
+//ask values (for new matrix), user input
 void query_values(struct matrix *empty) {
     for(int i = 0; i < empty->rows; i++) {
         for(int j = 0; j < empty->cols; j++) {
@@ -135,7 +135,8 @@ void query_values(struct matrix *empty) {
 }
 
 
-//show fundamental values of given matrix, uses the WRITEP macro; 
+//show fundamental values of given matrix, uses the WRITEP macro, can write to stdout or export file
+//depending on the value of interactive; 
 void show_matrix(struct matrix *mat) {
     fputs(mat->id, WRITEP); 
     fputc('\n', WRITEP); 
@@ -207,7 +208,8 @@ void copy_matrix(struct matrix *kid, const struct matrix *parent) {
 } 
 
 
-//sane reduced row echelon form on a 2D array; probably works; returns number of row exchanges; O(rowc^2 * colc) ????
+//sane reduced row echelon form on a 2D array, gaussian elimination;
+//probably works; returns number of row exchanges; O(rowc^2 * colc) ????
 int realrref(float **p, int rowc, int colc) {
     //pivot column coordinate, number of row exchanges; used in determinant; 
     int lead = 0, count = 0; 
@@ -455,7 +457,7 @@ void merge(float *p, int left, int mid, int right) {
 void mergesort(float *p, int left, int right) {
     if(left < right) {
         //avoiding overflow
-        int mid = left + (right - left) >> 1;
+        int mid = left + (right - left)/2;
 
         mergesort(p, left, mid); 
         mergesort(p, mid, right); 
