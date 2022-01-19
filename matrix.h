@@ -88,6 +88,20 @@ void query_id(char s[mxid], const struct matrix_list *v) {
     }
 }
 
+//asks for matrix id for the task in message string and returns the matrix index in the memory vector; 
+int indexing(struct matrix_list *v, char message[200]) {
+    char help[mxid]; 
+    int index; 
+    do {
+        printf("%s", message); 
+        scanf("%s", help); 
+        index = search_id(help, v);  
+        if(index == -1)
+            puts("Name not found, try again."); 
+    } while(index == -1);
+    return index; 
+}
+
 //ask dimensions, user input; problematic if user inputs characters!
 void query_dim(int *pr, int *pc) {
     do {
@@ -159,8 +173,8 @@ void difference(struct matrix *diff, const struct matrix *A, const struct matrix
             (diff->pin)[i*A->cols + j] = A->pin[i*A->cols + j] - B->pin[i*B->cols + j]; 
 }
 
-//matrix multiplication
-void product(struct matrix *prod, const struct matrix *left, const struct matrix *right) {
+//matrix multiplication O(rowsleft * colsright * common);
+void product(struct matrix *prod, const struct matrix *left, const struct matrix *right) { 
     assert(left->cols == right->rows); 
     //int common = left->cols; 
     for(int i = 0; i < prod->rows; i++) {
@@ -193,7 +207,7 @@ void copy_matrix(struct matrix *kid, const struct matrix *parent) {
 } 
 
 
-//sane reduced row echelon form on a 2D array; probably works; returns number of row exchanges;
+//sane reduced row echelon form on a 2D array; probably works; returns number of row exchanges; O(rowc^2 * colc) ????
 int realrref(float **p, int rowc, int colc) {
     //pivot column coordinate, number of row exchanges; used in determinant; 
     int lead = 0, count = 0; 
@@ -262,7 +276,7 @@ void rref(struct matrix *m) {
     free(p); 
 } 
 
-//returns the determinant of square matrix;
+//returns the determinant of square matrix; time complexity same as realrref;
 float determinant(struct matrix *m) {
 
     int rowc = m->rows, colc = m->cols;
@@ -297,7 +311,7 @@ float determinant(struct matrix *m) {
     return det;
 }
 
-//returns the rank of the matrix; 
+//returns the rank of the matrix; time complexity same as realrref; 
 int rank(struct matrix *m) {
     int rowc = m->rows, colc = m->cols;
 
@@ -374,7 +388,7 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     return res; 
 }
 
-//edits one element of a given matrix
+//edits elements of given matrix, one by one until users escapes; 
 void edit(struct matrix *A)
 {
     int i, j;
@@ -394,5 +408,58 @@ void edit(struct matrix *A)
         scanf("%f", &new_value);
         A->pin[(i-1)*(A->cols) +j-1] = new_value;
     } while(i != 0 && j != 0);
+}
+
+//merge two arrays, sorted;
+void merge(float *p, int left, int mid, int right) {
+    int i, j, k; //indexing
+    int sizeleft = mid - left + 1; 
+    int sizeright = right - mid; 
+
+    //helper arrays; 
+    float L[sizeleft], R[sizeright]; 
+
+    //copy elements
+    for(int c = 0; c < sizeleft; c++)
+        L[c] = p[left + c]; 
+    for(int c = 0; c < sizeright; c++) 
+        R[c] = p[mid + c + 1];  
+
+    //initial merging 
+    i = 0, j = 0, k = left; 
+    while(i < sizeleft && j < sizeright) {
+        if(L[i] <= R[j]) {
+            p[k] = L[i]; 
+            i++; 
+        }
+        else {
+            p[k] = R[j]; 
+            j++; 
+        }
+    }
+
+    //copy remaining elements from the left array or from the right array, cannot happen simultaneously;
+    while(i < sizeleft) {
+        p[k] = L[i];
+        i++; 
+        k++; 
+    }
+    while(j < sizeright) {
+        p[k] = R[j];
+        j++; 
+        k++; 
+    }
+}
+
+//mergesort, recursively break in halves and merge sorted subarrays; O(nlogn)
+void mergesort(float *p, int left, int right) {
+    if(left < right) {
+        //avoiding overflow
+        int mid = left + (right - left) >> 1;
+
+        mergesort(p, left, mid); 
+        mergesort(p, mid, right); 
+        merge(p, left, mid, right); 
+    }
 }
 
