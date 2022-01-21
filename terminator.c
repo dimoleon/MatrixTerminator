@@ -107,12 +107,12 @@ opi1:
                 show_matrix(v->e[index]); 
                 getchar(); 
 
-                int vecsize; 
+                int vecsize, dimcount; 
                 bool roworcol;
                 char detail[7]; 
 
                 while(true) {
-                    printf("Do you want to extract a row or a column? (Type r for row, c for column or 0 to go back): "); 
+                    printf("Do you want to extract a row or a column? (Type 'r' for row, 'c' for column): "); 
                     fgets(input, 1024, stdin); 
                     char sel = input[0]; 
                     input[strlen(input) - 1] = '\0';
@@ -133,17 +133,19 @@ opi1:
                 if(roworcol) {
                     vecsize = (v->e[index])->cols; 
                     strcpy(detail, "row"); 
+                    dimcount = (v->e[index])->rows; 
                 } 
                 else {
                     vecsize = (v->e[index])->rows; 
                     strcpy(detail, "column"); 
+                    dimcount = (v->e[index])->cols; 
                 }
 
                 int n; 
                 while(true) {        
                     printf("Give the number of the %s you want to extract: ", detail); 
                     scanf("%d", &n); 
-                    if(1 <= n && n <= vecsize)
+                    if(1 <= n && n <= dimcount)
                         break;
                     puts("Out of bounds. Try again..."); 
                 }
@@ -472,10 +474,103 @@ opi6:
                 puts("Attention! Sorting a row or column doesn't create a new matrix, but it modifies the given one."); 
 
                 index = indexing(v, "Give the name of the matrix whose row or column you want to sort: "); 
+                getchar(); 
+
                 show_matrix(v->e[index]); 
                  
+                bool roworcol;
+                char detail[7]; 
+                int vecsize, dimcount; 
 
+                while(true) {
+                    printf("Do you want to sort a row or a column? (Type 'r' for row, 'c' for column or '0' to go back): "); 
+                    fgets(input, 1024, stdin); 
+                    char sel = input[0]; 
+                    input[strlen(input) - 1] = '\0';
+                    if(sel == 'r') {
+                        roworcol = true;
+                        break;
+                    }
+                    else if(sel == 'c') {
+                        roworcol = false;
+                        break;
+                    }
+                    else if(sel == '0')
+                        goto opi6;
+                    else
+                        puts("Invalid input. Try again..."); 
+                }
 
+                if(roworcol) {
+                    vecsize = (v->e[index])->cols; 
+                    strcpy(detail, "row"); 
+                    dimcount = (v->e[index])->rows;
+                } 
+                else {
+                    vecsize = (v->e[index])->rows; 
+                    strcpy(detail, "column"); 
+                    dimcount = (v->e[index])->cols;
+                }
+                
+                int n; 
+                while(true) {        
+                    printf("Give the number of the %s you want to sort: ", detail); 
+                    scanf("%d", &n); 
+                    if(1 <= n && n <= dimcount)
+                        break;
+                    puts("Out of bounds. Try again..."); 
+                }
+                n--;
+
+                getchar();
+
+                bool ascdesorder; 
+                while(true) {
+                    printf("Do you want to sort in ascending or descending order? (Type 'a' for ascending, 'd' for descending): "); 
+                    fgets(input, 1024, stdin); 
+                    char sel = input[0]; 
+                    input[strlen(input) - 1] = '\0';
+                    if(sel == 'a') {
+                        ascdesorder = true;
+                        break;
+                    }
+                    else if(sel == 'd') {
+                        ascdesorder = false;
+                        break;
+                    }
+                    else
+                        puts("Invalid input. Try again..."); 
+                }
+                
+                float tobesorted[mxdim];
+                if(roworcol) {
+                    for(int i = 0; i < vecsize; i++)
+                        tobesorted[i] = (v->e[index])->pin[n*(v->e[index])->cols + i];
+                    mergesort(tobesorted, 0, vecsize - 1); 
+                    if(ascdesorder) {
+                        for(int i = 0; i < vecsize; i++)
+                            (v->e[index])->pin[n*(v->e[index])->cols + i] = tobesorted[i];
+                    }
+                    else {
+                        for(int i = 0; i < vecsize; i++)
+                            (v->e[index])->pin[n*(v->e[index])->cols + i] = tobesorted[vecsize - 1 - i];
+                    }
+                }
+                else {
+                    for(int i = 0; i < vecsize; i++) 
+                        tobesorted[i] = (v->e[index])->pin[i*(v->e[index])->cols + n];
+                    mergesort(tobesorted, 0, vecsize - 1); 
+                    if(ascdesorder) {
+                        for(int i = 0; i < vecsize; i++)
+                            (v->e[index])->pin[i*(v->e[index])->cols + n] = tobesorted[i];
+                    }
+                    else {
+                        for(int i = 0; i < vecsize; i++)
+                            (v->e[index])->pin[i*(v->e[index])->cols + n] = tobesorted[vecsize - 1 - i];
+                    }
+                }
+
+                show_matrix(v->e[index]); 
             }
             else if(d == 'a')   //Dot product; got me there for a sec;  
             {

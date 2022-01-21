@@ -47,17 +47,17 @@ void delete_matrix(struct matrix **ptr) {
 }
 
 //insert matrix in memory vector (super cool), double size of memory if it doesn't fit. 
-int insert(struct matrix *m, struct matrix_list **mem) {
-    size_t x = *mem ? mem[0]->size : 0;
+int insert(struct matrix *m, struct matrix_list **v) {
+    size_t x = *v ? v[0]->size : 0;
     size_t y = x + 1; 
     if((x & y) == 0) {
-        void *temp = realloc(*mem, sizeof **mem + (x + y)*sizeof mem[0]->e[0]);
+        void *temp = realloc(*v, sizeof **v + (x + y)*sizeof v[0]->e[0]);
         if(!temp)
             return 1;
-        *mem = temp; 
+        *v = temp; 
     }
-    mem[0]->e[x] = m;
-    mem[0]->size = y; 
+    v[0]->e[x] = m;
+    v[0]->size = y; 
     return 0; 
 } 
 
@@ -382,8 +382,7 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     assert(A->rows == 3 && B->rows == 3 && C->rows == 3 && (A->cols) == 1 && (B->cols) == 1 && (C->cols) == 1);
 
     struct matrix *temp;
-    char tempstr[mxid] = "something"; 
-    init_matrix(&temp, 3, 1, tempstr);
+    init_matrix(&temp, 3, 1, "temp");
     cross_product(B, C, temp);
     double res = dot_product(A, temp); 
     delete_matrix(&temp); 
@@ -439,6 +438,7 @@ void merge(float *p, int left, int mid, int right) {
             p[k] = R[j]; 
             j++; 
         }
+        k++;
     }
 
     //copy remaining elements from the left array or from the right array, cannot happen simultaneously;
@@ -461,8 +461,9 @@ void mergesort(float *p, int left, int right) {
         int mid = left + (right - left)/2;
 
         mergesort(p, left, mid); 
-        mergesort(p, mid, right); 
+        mergesort(p, mid + 1, right); 
         merge(p, left, mid, right); 
     }
 }
+
 
