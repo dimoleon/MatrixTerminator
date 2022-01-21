@@ -308,7 +308,7 @@ opi4:
             }     
 
             printf("These are the operation codes:\n-Addition(0).\n-Subtraction(1).\n-Multiplication(2).\n-Transposition(3)."
-            "\n-Scalar Multiplication(4). \n-Determinant(5).\n-Rank(6).\n-Row Echelon form(7).\n\n ~The following are for vectors only~"
+            "\n-Scalar Multiplication(4). \n-Determinant(5).\n-Rank(6).\n-Row Echelon form(7).\n-Sort Row or Column(8)\n\n ~The following are for vectors only~"
             "\n\n-Dot product(a).\n-Cross product(Only 3D)(b).\n-Mixed product(Only 3D)(c).\n");
 
 opi6: 
