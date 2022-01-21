@@ -467,6 +467,16 @@ opi6:
 
                 getchar();
             }
+            else if(d == '8')   //Sort row or column of matrix;
+            {
+                puts("Attention! Sorting a row or column doesn't create a new matrix, but it modifies the given one."); 
+
+                index = indexing(v, "Give the name of the matrix whose row or column you want to sort: "); 
+                show_matrix(v->e[index]); 
+                 
+
+
+            }
             else if(d == 'a')   //Dot product; got me there for a sec;  
             {
                 puts("To get the dot product of two column matrices, or vectors, they must have the same number of rows!");

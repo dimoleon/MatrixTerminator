@@ -382,7 +382,8 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     assert(A->rows == 3 && B->rows == 3 && C->rows == 3 && (A->cols) == 1 && (B->cols) == 1 && (C->cols) == 1);
 
     struct matrix *temp;
-    init_matrix(&temp, 3, 1, "temp");
+    char tempstr[mxid] = "something"; 
+    init_matrix(&temp, 3, 1, tempstr);
     cross_product(B, C, temp);
     double res = dot_product(A, temp); 
     delete_matrix(&temp); 
