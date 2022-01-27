@@ -64,7 +64,7 @@ int insert(struct matrix *m, struct matrix_list **v) {
 
 //find index of matrix, given name; else return -1; 
 int search_id(char s[mxid], const struct matrix_list *v) {
-    for(int i = 0; i < v->size; i++) {
+    for(size_t i = 0; i < v->size; i++) {
         if(v->e[i])
             if(strcmp(s, (v->e[i])->id) == 0)
                 return i; 
@@ -382,7 +382,8 @@ double mixed_product(struct matrix *A, struct matrix *B, struct matrix *C)
     assert(A->rows == 3 && B->rows == 3 && C->rows == 3 && (A->cols) == 1 && (B->cols) == 1 && (C->cols) == 1);
 
     struct matrix *temp;
-    init_matrix(&temp, 3, 1, "temp");
+    char sth[mxid] = "temp"; 
+    init_matrix(&temp, 3, 1, sth);
     cross_product(B, C, temp);
     double res = dot_product(A, temp); 
     delete_matrix(&temp); 
@@ -465,5 +466,4 @@ void mergesort(float *p, int left, int right) {
         merge(p, left, mid, right); 
     }
 }
-
 

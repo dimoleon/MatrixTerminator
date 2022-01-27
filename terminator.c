@@ -1,5 +1,5 @@
 /* 
-MATRIX TERMINATOR ::)
+MATRIX TERMINATOR ::)>
 */
 
 #include <stdio.h>
@@ -8,11 +8,14 @@ MATRIX TERMINATOR ::)
 #include <string.h>
 #include "matrixheader.h"
 
-//quick ERROR macro; primarily used for memory allocation checks; //stupidity at its finest; 
+//quick ERROR macro; primarily used for memory allocation checks;
 #define ERROR(A) if(A) {puts("ERROR. Abort ship!"); break;}
 
 int main(void) {
 
+    //welcome message;
+    puts("Welcome to Matrix Terminator,");
+    puts("the application which smashes matrices until they change."); 
 
     //memory vector
     struct matrix_list *v = NULL; 
@@ -22,7 +25,7 @@ int main(void) {
     char name[mxid]; 
     int r, c, real = 0, index, first, second, third; //real -> real count of matrices in memory vector; size of memory vector cannot be reduced;    
     char a, b, f, d, input[1024];  
-    bool shouldask = true; 
+    bool shouldask = true; //variable to replace most of the menu goto's
 
     while(true) {
 
@@ -37,17 +40,17 @@ int main(void) {
 
         input[strlen(input) - 1] = '\0';  
 
-        if(a == 'm') 
+        if(a == 'm') //Main menu
         {
 
-            printf("The program can do the following:\n-Create Matrix(1)\n-Load Matrices(2)\n-Edit Matrix(3)"
-            "\n-View Existing Matrix(4)\n-Write(5)\n-Do Operations with Matrices(6)\n-Delete matrix(7)"
+            printf("The program can do the following:\n-Create Matrix(1)\n-Import Matrices from file(2)\n-Edit Matrix(3)"
+            "\n-View Existing Matrix(4)\n-Export Matrices to file(5)\n-Do Operations with Matrices(6)\n-Delete matrix(7)"
             "\n\n-You can always press (q) to quit and (m) for the main menu.\nJust press the code of the command you want to use!\n");
 
             shouldask = true; 
 
         } 
-        else if(a == '1') 
+        else if(a == '1') //Matrix creation 
         {
 
 opi1: 
@@ -97,6 +100,7 @@ opi1:
             }
             else if(f == '3') //Extract row or column to create vector; 
             {
+                //check memory
                 if(!v || real == 0) {
                     puts("There is currently no other matrix stored in memory. Going back..."); 
                     continue; 
@@ -111,6 +115,7 @@ opi1:
                 bool roworcol;
                 char detail[7]; 
 
+                //pick row or column
                 while(true) {
                     printf("Do you want to extract a row or a column? (Type 'r' for row, 'c' for column): "); 
                     fgets(input, 1024, stdin); 
@@ -142,6 +147,7 @@ opi1:
                 }
 
                 int n; 
+                //pick row or column number 
                 while(true) {        
                     printf("Give the number of the %s you want to extract: ", detail); 
                     scanf("%d", &n); 
@@ -153,6 +159,7 @@ opi1:
                 query_id(name, v); 
                 ERROR(init_matrix(&new, vecsize, 1, name))
 
+                //value assingment to new vector;
                 if(roworcol) 
                     for(int i = 0; i < vecsize; i++) 
                         new->pin[i] = (v->e[index])->pin[n*(v->e[index])->cols + i]; 
@@ -175,16 +182,19 @@ opi1:
                 shouldask = false; 
                 a = 'm'; 
             }
-            else
+            else //invalid input
             {
                 printf("Invalid input! Try again...\n\n");
                 goto opi1;
             }
         }
-        else if(a == '2')   //Load Matrix; 
+        else if(a == '2')   //Load Matrices from file; 
         {
+            //see the READP macro in "matrixheader.h"; 
             interactive = false; 
+            
 
+            //Get path;
             printf("Give path to import file: "); 
             char loadpath[1024]; 
             fgets(loadpath, 1024, stdin); 
@@ -196,14 +206,17 @@ opi1:
                 continue; 
             }
 
+            //check number of matrices in the beginning of the file; 
             int num;
             fscanf(reader, "%d", &num); 
+            //load the matrices; 
             for(int i = 0; i < num; i++) {
                 fscanf(reader, "%s", name); 
                 if(v) 
-                    if(search_id(name, v) != -1)
+                    if(search_id(name, v) != -1) {
                         continue;
-
+                        printf("Matrix '%s' already exists. Going to next matrix.\n", name);
+                    }
                 query_dim(&r, &c); 
                 init_matrix(&new, r, c, name);
                 query_values(new); 
@@ -212,6 +225,7 @@ opi1:
                 real++; 
             }
 
+            //close file; 
             fclose(reader); 
             if(num == 1)
                 printf("%d Matrix loaded successfully.\n", num); 
@@ -219,7 +233,7 @@ opi1:
                 printf("%d Matrices loaded successfully.\n", num); 
 
         }
-        else if(a == '3')   //Edit Matrix;
+        else if(a == '3')   //Edit Matrix, only values not dimensions;
         {
             first = indexing(v, "Give the name of the matrix you want to edit: ");  
 
@@ -236,6 +250,17 @@ opi1:
                 puts("There is currently no matrix stored in memory");
                 continue; 
             }
+
+            ///if only 1 matrix in memory, show it immediately;
+            if(real == 1) {
+                for(size_t i = 0; i < v->size; i++) {
+                    if(v->e[i]) {
+                        show_matrix(v->e[i]);
+                        break; 
+                    }
+                }
+                continue; 
+            }
             printf("Do you want to show all matrices (0) or a single?(1).\n");
 
 opi4: 
@@ -246,7 +271,7 @@ opi4:
 
             if(b == '0')    //Show all; 
             {
-                for(int i = 0; i < v->size; i++) 
+                for(size_t i = 0; i < v->size; i++) 
                     if(v->e[i]) 
                         show_matrix(v->e[i]); 
             }
@@ -265,43 +290,51 @@ opi4:
             {
                 break; 
             }
-            else
+            else //Invalid input;
             {
                 printf("Invalid input! Try again..."); 
                 goto opi4;
             }
 
         }
-        else if(a == '5')   //Write to memory; 
+        else if(a == '5')   //Export memory to file; 
         {
+            //check WRITEP macro in "matrixheader.h";
             interactive = false; 
+            
+            //ensure matrices in memory; 
             if(!v || real == 0) {
                 puts("There is currently no matrix stored in memory.");
                 continue; 
             }
 
+            //get path to export file;
             printf("Give path to export file: "); 
             char writepath[1024]; 
             fgets(writepath, 1024, stdin); 
             writepath[strlen(writepath) - 1] = '\0';
 
             writer = fopen(writepath, "w"); 
+            //check file existence; 
             if(!writer) {
                 puts("Unable to find or create file. Going back..."); 
                 continue; 
             }
 
+            //write real number of matrices, not current memory vector size; 
             fprintf(writer, "%d\n\n", real); 
-            for(int i = 0; i < v->size; i++) 
+            for(size_t i = 0; i < v->size; i++) 
                 if(v->e[i]) 
                     show_matrix(v->e[i]);
 
+            //close file;
             fclose(writer); 
             puts("Successful export."); 
 
         }
         else if(a == '6')   //Do Operations with Matrices;
         {
+            //ensure existence of matrices in memory;
             if(!v || real == 0) {
                 puts("There is currently no matrix stored in memory.");
                 continue; 
@@ -482,6 +515,7 @@ opi6:
                 char detail[7]; 
                 int vecsize, dimcount; 
 
+                //pick row or column; 
                 while(true) {
                     printf("Do you want to sort a row or a column? (Type 'r' for row, 'c' for column or '0' to go back): "); 
                     fgets(input, 1024, stdin); 
@@ -512,6 +546,7 @@ opi6:
                     dimcount = (v->e[index])->cols;
                 }
                 
+                //pick number of row or column;
                 int n; 
                 while(true) {        
                     printf("Give the number of the %s you want to sort: ", detail); 
@@ -524,6 +559,7 @@ opi6:
 
                 getchar();
 
+                //pick ascending or descending order;
                 bool ascdesorder; 
                 while(true) {
                     printf("Do you want to sort in ascending or descending order? (Type 'a' for ascending, 'd' for descending): "); 
@@ -542,6 +578,7 @@ opi6:
                         puts("Invalid input. Try again..."); 
                 }
                 
+                //assign values to regular array, sort it and copy back; 
                 float tobesorted[mxdim];
                 if(roworcol) {
                     for(int i = 0; i < vecsize; i++)
@@ -664,12 +701,14 @@ opi6:
         }
         else if(a == '7')    //Delete matrix; 
         {   
+            //ensure existence of matrices in memory;
             if(!v || real == 0) {
                 puts("There is currently no matrix stored in memory. Try again..."); 
                 continue; 
             }
+            
+            //ask again in case of mistake; 
             printf("Are you sure you want to delete a matrix? ('y' for yes, 'n' for no): "); 
-
             fgets(input, 1024, stdin); 
             char confirm = input[0]; 
             if(confirm != 'y') {
@@ -691,14 +730,15 @@ opi6:
         {
             break; 
         }
-        else
+        else //invalid input; 
         {
             printf("Invalid input! Try again..(Maybe type 'm' for the main menu.\n\n");
         }
     }
 
+    //removing our trash before quitting :)>
     if(v) {
-        for(int i = 0; i < v->size; i++) 
+        for(size_t i = 0; i < v->size; i++) 
             if(v->e[i])
                 delete_matrix(&v->e[i]); 
         free(v); 
