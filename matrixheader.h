@@ -82,7 +82,7 @@ void query_id(char s[mxid], const struct matrix_list *v) {
     if(v) {
         while(search_id(s, v) != -1) {
             puts("Duplicate names not allowed! Try again."); 
-            printf("Give matrix name (max 10 characters, no spaces): "); 
+            printf("Give new matrix name (max 10 characters, no spaces): "); 
             scanf("%s", s); 
         }
     }

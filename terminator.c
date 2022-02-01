@@ -1,5 +1,6 @@
 /* 
 MATRIX TERMINATOR ::)>
+THMMY Project
 */
 
 #include <stdio.h>
@@ -31,9 +32,9 @@ int main(void) {
 
         interactive = true; 
         putchar('\n'); 
-        printf("What do you want the program to do? (Type 'm' for the main menu.)\n");
 
         if(shouldask) {
+            printf("What do you want the program to do? (Type 'm' for the main menu.)\n");
             fgets(input, 1024, stdin); 
             a = input[0]; 
         } 
@@ -207,15 +208,22 @@ opi1:
             }
 
             //check number of matrices in the beginning of the file; 
-            int num;
+            int num, sameid = 0;
             fscanf(reader, "%d", &num); 
             //load the matrices; 
             for(int i = 0; i < num; i++) {
                 fscanf(reader, "%s", name); 
                 if(v) 
                     if(search_id(name, v) != -1) {
-                        continue;
+                        sameid++; 
                         printf("Matrix '%s' already exists. Going to next matrix.\n", name);
+                        int rows; 
+                        fscanf(reader, "%d", &rows); 
+                        //just ignore row + 1 next lines; 
+                        for(int j = 0; j <= rows; j++) {
+                            fgets(input, 1024, reader); 
+                        }
+                        continue;
                     }
                 query_dim(&r, &c); 
                 init_matrix(&new, r, c, name);
@@ -227,10 +235,10 @@ opi1:
 
             //close file; 
             fclose(reader); 
-            if(num == 1)
-                printf("%d Matrix loaded successfully.\n", num); 
+            if((num - sameid) == 1)
+                printf("%d Matrix loaded successfully.\n", num - sameid); 
             else 
-                printf("%d Matrices loaded successfully.\n", num); 
+                printf("%d Matrices loaded successfully.\n", num - sameid); 
 
         }
         else if(a == '3')   //Edit Matrix, only values not dimensions;
@@ -736,11 +744,15 @@ opi6:
         }
     }
 
-    //removing our trash before quitting :)>
+    //removing our garbage before quitting :)>
     if(v) {
         for(size_t i = 0; i < v->size; i++) 
-            if(v->e[i])
+            if(v->e[i]) {
                 delete_matrix(&v->e[i]); 
+                real--; 
+                if(real == 0)   //bonus check for some special (?) corruption cases; 
+                    break; 
+            }
         free(v); 
     }
 
