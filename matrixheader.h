@@ -285,7 +285,7 @@ float determinant(struct matrix *m) {
     assert(rowc == colc); 
 
     float **p; 
-    p = (float **) malloc(rowc * sizeof(float)); 
+    p = (float **) malloc(rowc * sizeof(float *)); 
     assert(p); 
     for(int row = 0; row < rowc; row++) {
         p[row] = (float *) malloc(colc * sizeof(float)); 
@@ -318,7 +318,7 @@ int rank(struct matrix *m) {
     int rowc = m->rows, colc = m->cols;
 
     float **p; 
-    p = (float **) malloc(rowc * sizeof(float)); 
+    p = (float **) malloc(rowc * sizeof(float *)); 
     assert(p); 
     for(int row = 0; row < rowc; row++) {
         p[row] = (float *) malloc(colc * sizeof(float)); 
